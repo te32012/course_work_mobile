@@ -30,11 +30,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  get:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
-
+  flutter_image:
+  json_annotation: ^4.9.0
+  sqflite: ^2.4.2
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -45,6 +47,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  build_runner: ^2.4.15
+  json_serializable: ^6.9.5
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -61,7 +65,7 @@ flutter:
   assets:
     - assets/images/one.png
     - assets/images/two.png
-
+    - assets/animation/cicle.gif
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
