@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:course_work/data/model/film.dart';
 import 'package:course_work/data/model/film_request.dart';
+import 'package:course_work/data/model/films_request.dart';
 import 'package:course_work/data/model/top_film_request.dart';
 import 'package:course_work/data/repository/favorite_film_repository.dart';
 import 'package:course_work/data/repository/tmp_film_repository.dart';
@@ -14,10 +15,14 @@ final String apiKey = "5e58b82f-6e4e-45f8-8b75-2e5210aadcff";
 class Restcontroller extends GetxController {
   Rx<FavoriteFilmRepository> storage;
   Rx<TmpFilmRepository> tmp;
-  var isLoading = false;
-  var count = 1;
+  Rx<TmpFilmRepository> search;
+  var isLoadingFavorite = false;
+  var countFavorite = 1;
+  var isLoadingSearch = false;
+  var countSearch = 1;
+  var lastKeyword = "";
 
-  Restcontroller(this.storage, this.tmp);
+  Restcontroller(this.storage, this.tmp, this.search);
 
   @override
   void onInit() async {
@@ -33,11 +38,11 @@ class Restcontroller extends GetxController {
   }
 
   Future<void> fetchPageTopFilm() async {
-    isLoading = true;
+    isLoadingFavorite = true;
     var headers = {"X-API-KEY": apiKey, "Content-Type": "application/json"};
     final response = await http.get(
       Uri.parse(
-        'http://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=TOP_100_POPULAR_FILMS&page=$count',
+        'http://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=TOP_100_POPULAR_FILMS&page=$countFavorite',
       ),
       headers: headers,
     );
@@ -47,27 +52,36 @@ class Restcontroller extends GetxController {
           jsonDecode(response.body) as Map<String, dynamic>,
         ).films
       );
-      count++;
-      isLoading = false;
+      countFavorite++;
+      isLoadingFavorite = false;
     } else {
-      isLoading = false;
+      isLoadingFavorite = false;
       throw Exception("failed to download top films");
     }
   }
 
-  Future<TopFilmRequest> fetchPageByKeyword(String keyword) async {
+  Future<void> fetchPageByKeyword(String keyword) async {
+    if (keyword != lastKeyword) {
+      lastKeyword = keyword;
+      countSearch = 1;
+    }
     var headers = {"X-API-KEY": apiKey, "Content-Type": "application/json"};
     final response = await http.get(
       Uri.parse(
-        'http://kinopoiskapiunofficial.tech//api/v2.2/films?page=$count&keyword=$keyword',
+        'http://kinopoiskapiunofficial.tech//api/v2.2/films?page=$countSearch&keyword=$keyword',
       ),
       headers: headers,
     );
     if (response.statusCode == 200) {
-      return TopFilmRequest.fromJson(
-        jsonDecode(response.body) as Map<String, dynamic>,
+      search.value.films.addAll(
+        FilmsRequest.fromJson(
+          jsonDecode(response.body) as Map<String, dynamic>,
+        ).items
       );
+      countSearch++;
+      isLoadingSearch = false;
     } else {
+      isLoadingSearch = false;
       throw Exception("failed to download top films");
     }
   }

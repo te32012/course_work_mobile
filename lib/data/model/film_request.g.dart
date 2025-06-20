@@ -15,7 +15,7 @@ FilmRequest _$FilmRequestFromJson(Map<String, dynamic> json) => FilmRequest()
   ..countries = (json['countries'] as List<dynamic>?)
       ?.map((e) => Countries.fromJson(e as Map<String, dynamic>))
       .toList()
-  ..posterUrl = json['posterUrl'] as String?;
+  ..posterUrl = json['posterUrl'] as String;
 
 Map<String, dynamic> _$FilmRequestToJson(FilmRequest instance) =>
     <String, dynamic>{

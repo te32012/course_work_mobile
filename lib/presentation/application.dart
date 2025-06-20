@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:course_work/presentation/search.dart';
 import 'package:path/path.dart';
 import 'package:course_work/controller/rest_controller.dart';
 import 'package:course_work/data/repository/favorite_film_repository.dart';
@@ -13,19 +14,20 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class Routes {
-  static String popular = '/popular';
-  static String favorite = '/favorite';
-  static String search_error_found = '/SearchErrorFound';
-  static String search_not_found = '/searchNotFound';
-  static String waiting = '/waiting';
+  static final String popular = '/popular';
+  static final String favorite = '/favorite';
+  static final String searchErrorFound = '/SearchErrorFound';
+  static final String searchNotFound = '/searchNotFound';
+  static final String waiting = '/waiting';
+  static final String findPage = '/find';
 }
 
 final getPages = [
-
   GetPage(
     name: Routes.popular,
     page: () {
       var m = Main();
+      var text = TextEditingController().obs;
       return SafeArea(
         child: Scaffold(
           appBar: AppBar(
@@ -38,7 +40,19 @@ final getPages = [
                   );
                 }),
                 Spacer(),
-                Icon(Icons.search),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(() {
+                      return SafeArea(
+                        child: Scaffold(
+                          appBar: AppBar(title: Obx(() => TextField(controller: text.value))),
+                          body: Search(text),
+                        ),
+                      );
+                    });
+                  },
+                  child: Icon(Icons.search),
+                ),
               ],
             ),
           ),
@@ -49,12 +63,12 @@ final getPages = [
   ),
 
   GetPage(
-    name: Routes.search_error_found,
+    name: Routes.searchErrorFound,
     page: () => SafeArea(child: Scaffold(body: SearchErrorFound())),
   ),
 
   GetPage(
-    name: Routes.search_not_found,
+    name: Routes.searchNotFound,
     page: () => SafeArea(child: Scaffold(body: SearchNotFound())),
   ),
 
@@ -82,7 +96,7 @@ void main() async {
     version: 1,
   );
   Get.put(
-    Restcontroller(FavoriteFilmRepository(db).obs, TmpFilmRepository().obs),
+    Restcontroller(FavoriteFilmRepository(db).obs, TmpFilmRepository().obs, TmpFilmRepository().obs),
   );
   runApp(const MyApp());
 }

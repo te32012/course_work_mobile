@@ -9,7 +9,7 @@ class FilmRequest {
   int? year = -1;
   List<Genres>? genres = [];
   List<Countries>? countries = [];
-  String? posterUrl = "";
+  String posterUrl = "";
   FilmRequest();
 
   factory FilmRequest.fromJson(Map<String, dynamic> json) =>
