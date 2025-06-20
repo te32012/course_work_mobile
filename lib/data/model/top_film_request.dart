@@ -1,7 +1,7 @@
 import 'package:course_work/data/model/film.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'topFilmRequest.g.dart';
+part 'top_film_request.g.dart';
 
 
 @JsonSerializable(explicitToJson: true)

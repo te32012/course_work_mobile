@@ -1,85 +1,120 @@
+import 'package:course_work/data/model/film.dart';
 import 'package:flutter/material.dart';
 
 class AboutFilm extends StatelessWidget {
-  late String fullname, about, countris, types, poster;
+  final Film film;
 
-  AboutFilm({
-    super.key,
-    required this.fullname,
-    required this.about,
-    required this.countris,
-    required this.types,
-    required this.poster,
-  });
+  const AboutFilm(this.film, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        Flexible(
-          flex: 4,
-          child: Padding(
-            padding: EdgeInsetsGeometry.all(20),
-            child: Image.asset(poster),
+        Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height + 100,
           ),
-        ),
-        Flexible(
-          flex: 2,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: EdgeInsetsGeometry.symmetric(
-                  vertical: 10,
-                  horizontal: 20,
-                ),
-                child: Text(
-                  fullname,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+              Flexible(
+                flex: 4,
+                child: Padding(
+                  padding: EdgeInsetsGeometry.all(20),
+                  child: Image.network(
+                    film.posterUrl != null
+                        ? film.posterUrl!
+                        : 'http://localhost',
+                  ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsetsGeometry.symmetric(
-                  vertical: 10,
-                  horizontal: 20,
+              Flexible(
+                flex: 2,
+                child: ListView(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsetsGeometry.symmetric(
+                            vertical: 10,
+                            horizontal: 20,
+                          ),
+                          child: Text(
+                            film.nameRu != null ? film.nameRu! : 'без имени',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsetsGeometry.symmetric(
+                            vertical: 10,
+                            horizontal: 20,
+                          ),
+                          child: Text(
+                            film.description != null
+                                ? film.description!
+                                : 'без описания',
+                            softWrap: true,
+                            overflow: TextOverflow.clip,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: EdgeInsetsGeometry.symmetric(
+                                vertical: 10,
+                                horizontal: 20,
+                              ),
+                              child: Text(
+                                "Жанры:",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsetsGeometry.symmetric(
+                                vertical: 10,
+                                horizontal: 20,
+                              ),
+                              child: Text(
+                                film.genres != null
+                                    ? film.genres!
+                                          .map((e) => e.genre)
+                                          .take(2)
+                                          .reduce((e1, e2) => "$e1, $e2")
+                                    : "жанр не указан",
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: EdgeInsetsGeometry.all(20),
+                              child: Text(
+                                "Страны:",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsetsGeometry.all(20),
+                              child: Text(
+                                film.countries != null
+                                    ? film.countries!
+                                          .map((e){
+                                            return e.country.isNotEmpty ? e.country : '';
+                                          } )
+                                          .take(2)
+                                          .reduce((e1, e2) => "$e1, $e2")
+                                    : "страна не указана",
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                child: Text(about, softWrap: true, overflow: TextOverflow.clip),
-              ),
-              Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsetsGeometry.symmetric(
-                      vertical: 10,
-                      horizontal: 20,
-                    ),
-                    child: Text(
-                      "Жанры:",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsetsGeometry.symmetric(
-                      vertical: 10,
-                      horizontal: 20,
-                    ),
-                    child: Text(types, overflow: TextOverflow.ellipsis),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsetsGeometry.all(20),
-                    child: Text(
-                      "Страны:",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsetsGeometry.all(20),
-                    child: Text(countris, overflow: TextOverflow.ellipsis),
-                  ),
-                ],
               ),
             ],
           ),

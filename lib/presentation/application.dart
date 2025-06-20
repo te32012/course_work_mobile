@@ -1,14 +1,16 @@
-import 'dart:convert';
-
-import 'package:course_work/controller/RESTController.dart';
-import 'package:course_work/data/model/topFilmRequest.dart';
-import 'package:course_work/presentation/popular.dart';
+import 'dart:io';
+import 'package:path/path.dart';
+import 'package:course_work/controller/rest_controller.dart';
+import 'package:course_work/data/repository/favorite_film_repository.dart';
+import 'package:course_work/data/repository/tmp_film_repository.dart';
+import 'package:course_work/presentation/main.dart';
 import 'package:course_work/presentation/search_error_film.dart';
 import 'package:course_work/presentation/search_not_found.dart';
 import 'package:course_work/presentation/waiting.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
 
 class Routes {
   static String popular = '/popular';
@@ -19,29 +21,32 @@ class Routes {
 }
 
 final getPages = [
-  GetPage(
-    name: Routes.favorite,
-    page: () => SafeArea(child: Scaffold(body: Text(""))),
-  ),
 
   GetPage(
     name: Routes.popular,
-    page: () => SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Row(
-            children: [
-              Text("Популярные", style: TextStyle(fontWeight: FontWeight.bold)),
-              Spacer(),
-              Icon(Icons.search),
-            ],
+    page: () {
+      var m = Main();
+      return SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            title: Row(
+              children: [
+                Obx(() {
+                  return Text(
+                    m.isFavorite.value ? "Избранные" : "Популярные",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  );
+                }),
+                Spacer(),
+                Icon(Icons.search),
+              ],
+            ),
           ),
+          body: m,
         ),
-        body: Popular()
-        )
-      ),
-    ),
-  
+      );
+    },
+  ),
 
   GetPage(
     name: Routes.search_error_found,
@@ -59,10 +64,28 @@ final getPages = [
   ),
 ];
 
-void main() {
-  runApp(const MyApp());
+Future<Directory> getDir() async {
+  final dir = getApplicationDocumentsDirectory();
+  return await dir;
 }
 
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  var dir = await getDir();
+  var db = await openDatabase(
+    join(dir.path, 'film.db'),
+    onCreate: (db, version) {
+      db.execute(
+        'CREATE TABLE films (id INTEGER PRIMARY KEY, idFilm INTEGER, data TEXT)',
+      );
+    },
+    version: 1,
+  );
+  Get.put(
+    Restcontroller(FavoriteFilmRepository(db).obs, TmpFilmRepository().obs),
+  );
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -79,7 +102,7 @@ class MyApp extends StatelessWidget {
         //
         // TRY THIS: Try running your application with "flutter run". You'll see
         // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
+        // try changing theeedColo sr in the colorScheme below to Colors.green
         // and then invoke "hot reload" (save your changes or press the "hot
         // reload" button in a Flutter-supported IDE, or press "r" if you used
         // the command line to start the app).

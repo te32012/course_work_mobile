@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'topFilmRequest.dart';
+part of 'top_film_request.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
@@ -14,4 +14,6 @@ TopFilmRequest _$TopFilmRequestFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$TopFilmRequestToJson(TopFilmRequest instance) =>
-    <String, dynamic>{'films': instance.films.map((e) => e.toJson()).toList()};
+    <String, dynamic>{
+      'films': instance.films.map((e) => e.toJson()).toList(),
+    };

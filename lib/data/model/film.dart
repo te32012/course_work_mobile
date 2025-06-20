@@ -23,11 +23,12 @@ class Genres {
 class Film {
   Film(this.filmId, this.nameRu, this.countries, this.genres, this.posterUrl);
   int filmId = -1;
-  String nameRu = "";
-  List<Countries> countries = [];
-  List<Genres> genres = [];
-  String year = "";
-  String posterUrl = "";
+  String? nameRu = "";
+  List<Countries>? countries = [];
+  List<Genres>? genres = [];
+  String? year = "";
+  String? posterUrl = "";
+  String? description = '';
   factory Film.fromJson(Map<String, dynamic> json) =>
       _$FilmFromJson(json);
   Map<String, dynamic> toJson() => _$FilmToJson(this);
