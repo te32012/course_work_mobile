@@ -56,7 +56,7 @@ class FavoriteFilmRepository extends GetxService {
 
   Film jsonMapToFilm(Map<String, Object?> m) {
     return Film.fromJson(
-      jsonDecode(['data'] as String) as Map<String, Object?>,
+      jsonDecode(m['data'] as String) as Map<String, Object?>,
     );
   }
 }

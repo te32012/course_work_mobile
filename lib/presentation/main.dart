@@ -1,14 +1,12 @@
 import 'package:course_work/controller/rest_controller.dart';
 import 'package:course_work/presentation/about_film.dart';
-import 'package:course_work/presentation/application.dart';
 import 'package:course_work/presentation/widget/cart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class Main extends GetView<Restcontroller> {
-  var isFavorite = false.obs;
 
-  Main({super.key});
+  const Main({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +15,7 @@ class Main extends GetView<Restcontroller> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Flexible(
-            flex: 11,
+          Expanded(
             child: Obx(() {
               return NotificationListener<ScrollNotification>(
                 onNotification: (ScrollNotification scrollInfo) {
@@ -32,13 +29,16 @@ class Main extends GetView<Restcontroller> {
                   return true; //
                 },
                 child: ListView.builder(
-                  itemCount: isFavorite.value
+                  itemCount: controller.isFaivorite.value
                       ? controller.storage.value.storageList.length
                       : controller.tmp.value.films.length,
                   itemBuilder: (BuildContext context, int index) {
+                    var f = controller.isFaivorite.value
+                        ? controller.storage.value.storageList[index].film
+                        : controller.tmp.value.films[index];
                     return GestureDetector(
                       onTap: () async {
-                        if (!isFavorite.value) {
+                        if (!controller.isFaivorite.value) {
                           var film = await controller.fetchFilmById(
                             controller.tmp.value.films[index].filmId,
                           );
@@ -51,25 +51,15 @@ class Main extends GetView<Restcontroller> {
                           () => SafeArea(
                             child: Scaffold(
                               appBar: AppBar(),
-                              body: AboutFilm(
-                                isFavorite.value
-                                    ? controller
-                                          .storage
-                                          .value
-                                          .storageList[index]
-                                          .film
-                                    : controller.tmp.value.films[index],
-                              ),
+                              body: AboutFilm(f),
                             ),
                           ),
                         );
                       },
                       child: PosterCart(
                         controller.buttonPressed,
-                        isFavorite.value
-                            ? controller.storage.value.storageList[index].film
-                            : controller.tmp.value.films[index],
-                        false.obs,
+                        f,
+                        controller.storage.value.hasElement(f.filmId),
                       ),
                     );
                   },
@@ -77,23 +67,28 @@ class Main extends GetView<Restcontroller> {
               );
             }),
           ),
-          Flexible(
-            flex: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FilledButton.tonal(
-                  onPressed: () {
-                    isFavorite.value = false;
-                  },
-                  child: Text("Популярные", style: TextStyle(fontSize: 14)),
-                ),
-                FilledButton(
-                  onPressed: () => {isFavorite.value = true},
-                  child: Text("Избранные", style: TextStyle(fontSize: 14)),
-                ),
-              ],
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FilledButton.tonal(
+                onPressed: () {
+                  controller.isFaivorite = false.obs;
+                  controller.tmp.refresh();
+                  controller.storage.refresh();
+                  controller.isFaivorite.refresh();
+                },
+                child: Text("Популярные", style: TextStyle(fontSize: 14)),
+              ),
+              FilledButton(
+                onPressed: () {
+                  controller.isFaivorite = true.obs;
+                  controller.tmp.refresh();
+                  controller.storage.refresh();
+                  controller.isFaivorite.refresh();
+                },
+                child: Text("Избранные", style: TextStyle(fontSize: 14)),
+              ),
+            ],
           ),
         ],
       ),

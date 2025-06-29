@@ -2,7 +2,6 @@ import 'package:course_work/controller/rest_controller.dart';
 import 'package:course_work/presentation/about_film.dart';
 import 'package:course_work/presentation/widget/cart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 class Search extends GetView<Restcontroller> {
@@ -28,9 +27,11 @@ class Search extends GetView<Restcontroller> {
                   if (scrollInfo.metrics.pixels == 0) {
                     return false; // Если на верхней части
                   }
+                  print("search");
                   controller.fetchPageByKeyword(
                     text.value.text,
                   ); // Загружаем новые данные
+                  text.refresh();
                   return true; //
                 },
                 child: ListView.builder(
@@ -59,7 +60,7 @@ class Search extends GetView<Restcontroller> {
                       child: PosterCart(
                         controller.buttonPressed,
                         controller.search.value.films[index],
-                        false.obs,
+                        controller.storage.value.hasElement(controller.search.value.films[index].filmId)
                       ),
                     );
                   },

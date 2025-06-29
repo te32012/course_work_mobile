@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:course_work/data/model/film.dart';
 import 'package:course_work/presentation/search.dart';
 import 'package:path/path.dart';
 import 'package:course_work/controller/rest_controller.dart';
@@ -33,19 +34,29 @@ final getPages = [
           appBar: AppBar(
             title: Row(
               children: [
-                Obx(() {
-                  return Text(
-                    m.isFavorite.value ? "Избранные" : "Популярные",
+                Obx(
+                  () => Text(
+                    m.controller.isFaivorite.value ? "Избранные" : "Популярные",
                     style: TextStyle(fontWeight: FontWeight.bold),
-                  );
-                }),
+                  ),
+                ),
                 Spacer(),
                 GestureDetector(
                   onTap: () {
                     Get.to(() {
                       return SafeArea(
                         child: Scaffold(
-                          appBar: AppBar(title: Obx(() => TextField(controller: text.value))),
+                          appBar: AppBar(
+                            title: Obx(
+                              () => TextField(
+                                controller: text.value,
+                                onChanged: (value) {
+                                  Get.find<Restcontroller>().fetchPageByKeyword(value);
+                                  Get.find<Restcontroller>().search.refresh();
+                                },
+                              ),
+                            ),
+                          ),
                           body: Search(text),
                         ),
                       );
@@ -86,6 +97,7 @@ Future<Directory> getDir() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   var dir = await getDir();
+  print(dir.path);
   var db = await openDatabase(
     join(dir.path, 'film.db'),
     onCreate: (db, version) {
@@ -95,9 +107,27 @@ void main() async {
     },
     version: 1,
   );
+  /*
+
+  Restcontroller r =  Restcontroller(
+      FavoriteFilmRepository(db).obs,
+      TmpFilmRepository().obs,
+      TmpFilmRepository().obs,
+    );
+  Film f = Film(filmId: 1, nameRu:  "noname", posterUrl:  "https://kinopoiskapiunofficial.tech/images/posters/kp/7527789.jpg");
+  r.getImage(f);
+  print(f.posterData);
+  r.fetchPageByKeyword("балерина");
+  print(r.search.value.films);
+    */
   Get.put(
-    Restcontroller(FavoriteFilmRepository(db).obs, TmpFilmRepository().obs, TmpFilmRepository().obs),
+    Restcontroller(
+      FavoriteFilmRepository(db).obs,
+      TmpFilmRepository().obs,
+      TmpFilmRepository().obs,
+    ),
   );
+  Get.find<Restcontroller>().storage.value.init();
   runApp(const MyApp());
 }
 

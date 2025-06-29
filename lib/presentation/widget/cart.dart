@@ -1,32 +1,22 @@
 import 'package:course_work/data/model/film.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:get/get.dart';
 
 class PosterCart extends StatelessWidget {
-  var isFavoriteCart = false.obs;
   final Film film;
-
-  final Function(bool e, Film film) buttonPressed;
+  bool isFavoriteCart = false;
+  final Function(Film film, bool isFaivorite) buttonPressed;
   PosterCart(this.buttonPressed, this.film, this.isFavoriteCart, {super.key});
-
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Flexible(
-          flex: 4,
-          child: Container(
-            padding: EdgeInsets.all(10),
-            height: 160,
-            width: 80,
-            child: Image.network(
-              film.posterUrl != null ? film.posterUrl! : 'http://localhost',
-            ),
-          ),
+        Container(
+          padding: EdgeInsets.all(10),
+          height: 160,
+          width: 80,
+          child: Image.network(film.posterUrl!),
         ),
-        Flexible(
-          flex: 6,
+        Expanded(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -59,23 +49,17 @@ class PosterCart extends StatelessWidget {
             ],
           ),
         ),
-        Spacer(flex: 1),
-        Flexible(
-          flex: 1,
-          child: Obx(() {
-            return GestureDetector(
-              onTap: () {
-                isFavoriteCart.value = !isFavoriteCart.value;
-                buttonPressed(isFavoriteCart.value, film);
-              },
-              child: isFavoriteCart.value
-                  ? Icon(Icons.favorite, color: Color.fromRGBO(8, 21, 198, 1))
-                  : Icon(
-                      Icons.favorite_border,
-                      color: Color.fromRGBO(8, 21, 198, 1),
-                    ),
-            );
-          }),
+        GestureDetector(
+          onTap: () {
+            isFavoriteCart = !isFavoriteCart;
+            buttonPressed(film, isFavoriteCart);
+          },
+          child: (isFavoriteCart)
+              ? Icon(Icons.favorite, color: Color.fromRGBO(8, 21, 198, 1))
+              : Icon(
+                  Icons.favorite_border,
+                  color: Color.fromRGBO(8, 21, 198, 1),
+                ),
         ),
       ],
     );

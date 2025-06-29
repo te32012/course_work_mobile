@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:course_work/data/model/film.dart';
 import 'package:course_work/data/model/film_request.dart';
@@ -8,7 +9,6 @@ import 'package:course_work/data/repository/favorite_film_repository.dart';
 import 'package:course_work/data/repository/tmp_film_repository.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 
 final String apiKey = "5e58b82f-6e4e-45f8-8b75-2e5210aadcff";
 
@@ -21,6 +21,7 @@ class Restcontroller extends GetxController {
   var isLoadingSearch = false;
   var countSearch = 1;
   var lastKeyword = "";
+  var isFaivorite = false.obs;
 
   Restcontroller(this.storage, this.tmp, this.search);
 
@@ -29,11 +30,18 @@ class Restcontroller extends GetxController {
     super.onInit();
     fetchPageTopFilm();
   }
-  void buttonPressed(bool e, Film f) async {
-    if (e) {
+
+  void buttonPressed(Film f, bool isFaivorite) async {
+    if (isFaivorite) {
       await storage.value.insertFilm(f);
+      storage.refresh();
+      tmp.refresh();
+      search.refresh();
     } else {
       await storage.value.deleteFilm(f.filmId);
+      storage.refresh();
+      tmp.refresh();
+      search.refresh();
     }
   }
 
@@ -50,7 +58,10 @@ class Restcontroller extends GetxController {
       tmp.value.films.addAll(
         TopFilmRequest.fromJson(
           jsonDecode(response.body) as Map<String, dynamic>,
-        ).films
+        ).films.map((element) {
+          getImage(element);
+          return element;
+        }).toList(),
       );
       countFavorite++;
       isLoadingFavorite = false;
@@ -64,6 +75,7 @@ class Restcontroller extends GetxController {
     if (keyword != lastKeyword) {
       lastKeyword = keyword;
       countSearch = 1;
+      search.value.films = <Film>[].obs;
     }
     var headers = {"X-API-KEY": apiKey, "Content-Type": "application/json"};
     final response = await http.get(
@@ -76,12 +88,11 @@ class Restcontroller extends GetxController {
       search.value.films.addAll(
         FilmsRequest.fromJson(
           jsonDecode(response.body) as Map<String, dynamic>,
-        ).items
+        ).items,
       );
       countSearch++;
       isLoadingSearch = false;
     } else {
-      isLoadingSearch = false;
       throw Exception("failed to download top films");
     }
   }
@@ -99,5 +110,19 @@ class Restcontroller extends GetxController {
     } else {
       throw Exception("failed to download top films");
     }
+  }
+
+  void getImage(Film film) async {
+    var headers = {"X-API-KEY": apiKey};
+    var resp = http.get(Uri.parse(film.posterUrl!), headers: headers);
+
+    resp
+        .then((value) {
+          print(value.statusCode);
+          film.posterData = value.bodyBytes;
+        })
+        .catchError((error) {
+          print(error);
+        });
   }
 }
