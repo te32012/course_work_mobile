@@ -43,6 +43,8 @@ class Film {
   String posterUrl = '';
   String description = '';
   Uint8List posterData = Uint8List(0);
+
+
   factory Film.fromJson(Map<String, dynamic> json) => _filmFromJson(json);
   Map<String, dynamic> toJson() => _toJson(this);
 
@@ -70,6 +72,8 @@ class Film {
     } else if (year is num) {
       current.year = year.toString();
     }
+    var list = (jsonMap["posterData"] as List<dynamic>?)?.map((element) => (element as num).toInt()).toList() ?? [];
+    current.posterData = Uint8List.fromList(list);
     return current;
   }
 
@@ -81,7 +85,8 @@ class Film {
       'description': film.description,
       'genres': film.genres.map((elemenet) => elemenet.toJson()).toList(),
       'countries': film.genres.map((element) => element.toJson()).toList(),
-      'year': film.year
+      'year': film.year,
+      'posterData': film.posterData.toList()
     };
   }
 }

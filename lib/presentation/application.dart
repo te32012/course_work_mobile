@@ -50,8 +50,9 @@ final getPages = [
                             title: Obx(
                               () => TextField(
                                 controller: text.value,
-                                onChanged: (value) {
-                                  Get.find<Restcontroller>().fetchPageByKeyword(value);
+                                onChanged: (value) async {
+                                  print(value);
+                                  await Get.find<Restcontroller>().fetchPageByKeyword(value);
                                   Get.find<Restcontroller>().search.refresh();
                                 },
                               ),

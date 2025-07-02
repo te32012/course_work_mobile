@@ -1,8 +1,9 @@
 import 'package:course_work/data/model/film.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class PosterCart extends StatelessWidget {
-  final Film film;
+  final Rx<Film> film;
   bool isFavoriteCart = false;
   final Function(Film film, bool isFaivorite) buttonPressed;
   PosterCart(this.buttonPressed, this.film, this.isFavoriteCart, {super.key});
@@ -14,7 +15,9 @@ class PosterCart extends StatelessWidget {
           padding: EdgeInsets.all(10),
           height: 160,
           width: 80,
-          child: Image.network(film.posterUrl!),
+          child: film.value.posterData.isNotEmpty
+              ? Obx(() => Image.memory(film.value.posterData))
+              : Image.asset("assets/images/not_found.png"),
         ),
         Expanded(
           child: Column(
@@ -25,7 +28,7 @@ class PosterCart extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      film.nameRu != null ? film.nameRu! : 'без имени',
+                      film.value.nameRu,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -41,7 +44,7 @@ class PosterCart extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    "${film.genres != null ? film.genres!.map((e) => e.genre).take(2).reduce((e1, e2) => "$e1, $e2") : "жанр не указан"} (${film.year != null ? film.year! : 'без года'})",
+                    "${film.value.genres != null && film.value.genres.isNotEmpty ? film.value.genres.map((e) => e.genre).take(2).reduce((e1, e2) => "$e1, $e2") : "жанр не указан"} (${film.value.year ?? 'без года'})",
                     style: TextStyle(fontSize: 12),
                   ),
                 ],
@@ -52,7 +55,7 @@ class PosterCart extends StatelessWidget {
         GestureDetector(
           onTap: () {
             isFavoriteCart = !isFavoriteCart;
-            buttonPressed(film, isFavoriteCart);
+            buttonPressed(film.value, isFavoriteCart);
           },
           child: (isFavoriteCart)
               ? Icon(Icons.favorite, color: Color.fromRGBO(8, 21, 198, 1))
@@ -64,4 +67,8 @@ class PosterCart extends StatelessWidget {
       ],
     );
   }
+}
+
+extension on Rx<Film> {
+  get year => null;
 }

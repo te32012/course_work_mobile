@@ -68,6 +68,7 @@ flutter:
     - assets/images/one.png
     - assets/images/two.png
     - assets/animation/cicle.gif
+    - assets/images/not_found.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

@@ -39,13 +39,11 @@ class Search extends GetView<Restcontroller> {
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () async {
-                        var film = await controller.fetchFilmById(
-                          controller.tmp.value.films[index].filmId,
-                        );
-                        controller.tmp.value.films[index].description =
-                            film.description != null
-                            ? film.description!
-                            : "нет описания";
+                        controller.fetchAdditionalAboutFilm(
+                          controller.search.value.films[index],
+                        ).then((_) {
+                          controller.update();
+                        });
                         Get.to(
                           () => SafeArea(
                             child: Scaffold(
@@ -60,7 +58,9 @@ class Search extends GetView<Restcontroller> {
                       child: PosterCart(
                         controller.buttonPressed,
                         controller.search.value.films[index],
-                        controller.storage.value.hasElement(controller.search.value.films[index].filmId)
+                        controller.storage.value.hasElement(
+                          controller.search.value.films[index].value.filmId,
+                        ),
                       ),
                     );
                   },
@@ -68,7 +68,7 @@ class Search extends GetView<Restcontroller> {
               );
             }),
           ),
-          Spacer(flex:1),
+          Spacer(flex: 1),
         ],
       ),
     );

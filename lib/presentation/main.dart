@@ -37,15 +37,19 @@ class Main extends GetView<Restcontroller> {
                         ? controller.storage.value.storageList[index].film
                         : controller.tmp.value.films[index];
                     return GestureDetector(
-                      onTap: () async {
-                        if (!controller.isFaivorite.value) {
-                          var film = await controller.fetchFilmById(
-                            controller.tmp.value.films[index].filmId,
-                          );
-                          controller.tmp.value.films[index].description =
-                              film.description != null
-                              ? film.description!
-                              : "нет описания";
+                      onTap: () {
+                        if (controller.isFaivorite.value) {
+                          controller.fetchAdditionalAboutFilm(
+                            controller.storage.value.storageList[index].film
+                          ).then((_) {
+                            controller.update();
+                          });
+                        } else {
+                          controller.fetchAdditionalAboutFilm(
+                            controller.tmp.value.films[index]
+                          ).then((_) {
+                            controller.update();
+                          });
                         }
                         Get.to(
                           () => SafeArea(
@@ -59,7 +63,7 @@ class Main extends GetView<Restcontroller> {
                       child: PosterCart(
                         controller.buttonPressed,
                         f,
-                        controller.storage.value.hasElement(f.filmId),
+                        controller.storage.value.hasElement(f.value.filmId),
                       ),
                     );
                   },
@@ -72,19 +76,15 @@ class Main extends GetView<Restcontroller> {
             children: [
               FilledButton.tonal(
                 onPressed: () {
-                  controller.isFaivorite = false.obs;
-                  controller.tmp.refresh();
-                  controller.storage.refresh();
-                  controller.isFaivorite.refresh();
+                  controller.isFaivorite.value = false;
+                  // controller.update();
                 },
                 child: Text("Популярные", style: TextStyle(fontSize: 14)),
               ),
               FilledButton(
                 onPressed: () {
-                  controller.isFaivorite = true.obs;
-                  controller.tmp.refresh();
-                  controller.storage.refresh();
-                  controller.isFaivorite.refresh();
+                  controller.isFaivorite.value = true;
+                  // controller.update();
                 },
                 child: Text("Избранные", style: TextStyle(fontSize: 14)),
               ),

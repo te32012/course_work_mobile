@@ -33,15 +33,11 @@ class Restcontroller extends GetxController {
 
   void buttonPressed(Film f, bool isFaivorite) async {
     if (isFaivorite) {
-      await storage.value.insertFilm(f);
-      storage.refresh();
-      tmp.refresh();
-      search.refresh();
+      await storage.value.insertFilm(f.obs);
+      update();
     } else {
       await storage.value.deleteFilm(f.filmId);
-      storage.refresh();
-      tmp.refresh();
-      search.refresh();
+      update();
     }
   }
 
@@ -58,10 +54,12 @@ class Restcontroller extends GetxController {
       tmp.value.films.addAll(
         TopFilmRequest.fromJson(
           jsonDecode(response.body) as Map<String, dynamic>,
-        ).films.map((element) {
-          getImage(element);
+        ).films.map((toElement) => toElement.obs).map((element) {
+          getImage(element).then((_) {
+            update();
+          });
           return element;
-        }).toList(),
+        }),
       );
       countFavorite++;
       isLoadingFavorite = false;
@@ -75,7 +73,7 @@ class Restcontroller extends GetxController {
     if (keyword != lastKeyword) {
       lastKeyword = keyword;
       countSearch = 1;
-      search.value.films = <Film>[].obs;
+      search.value.films = <Rx<Film>>[].obs;
     }
     var headers = {"X-API-KEY": apiKey, "Content-Type": "application/json"};
     final response = await http.get(
@@ -88,7 +86,12 @@ class Restcontroller extends GetxController {
       search.value.films.addAll(
         FilmsRequest.fromJson(
           jsonDecode(response.body) as Map<String, dynamic>,
-        ).items,
+        ).items.map((element) => element.obs).map((element) {
+          getImage(element).then((_) {
+            update();
+          });
+          return element;
+        }),
       );
       countSearch++;
       isLoadingSearch = false;
@@ -97,32 +100,39 @@ class Restcontroller extends GetxController {
     }
   }
 
-  Future<FilmRequest> fetchFilmById(int id) async {
+  Future<void> fetchAdditionalAboutFilm(Rx<Film> f) async {
     var headers = {"X-API-KEY": apiKey, "Content-Type": "application/json"};
     final response = await http.get(
-      Uri.parse('http://kinopoiskapiunofficial.tech/api/v2.2/films/$id'),
+      Uri.parse(
+        'http://kinopoiskapiunofficial.tech/api/v2.2/films/${f.value.filmId}',
+      ),
       headers: headers,
     );
     if (response.statusCode == 200) {
-      return FilmRequest.fromJson(
+      FilmRequest req = FilmRequest.fromJson(
         jsonDecode(response.body) as Map<String, dynamic>,
       );
+      f.value.description = req.description != null
+          ? req.description!
+          : "описание не найдено";
+      if (f.value.posterData.isEmpty) {
+        getImage(f).then((_) {
+          update();
+        });
+      }
     } else {
       throw Exception("failed to download top films");
     }
   }
 
-  void getImage(Film film) async {
+  Future<void> getImage(Rx<Film> film) async {
     var headers = {"X-API-KEY": apiKey};
-    var resp = http.get(Uri.parse(film.posterUrl!), headers: headers);
-
-    resp
-        .then((value) {
-          print(value.statusCode);
-          film.posterData = value.bodyBytes;
-        })
-        .catchError((error) {
-          print(error);
-        });
+    var resp = await http.get(
+      Uri.parse(film.value.posterUrl),
+      headers: headers,
+    );
+    if (resp.statusCode == 200) {
+      film.value.posterData = resp.bodyBytes;
+    }
   }
 }
