@@ -57,6 +57,7 @@ class Restcontroller extends GetxController {
         ).films.map((toElement) => toElement.obs).map((element) {
           getImage(element).then((_) {
             update();
+            element.refresh();
           });
           return element;
         }),
@@ -89,6 +90,7 @@ class Restcontroller extends GetxController {
         ).items.map((element) => element.obs).map((element) {
           getImage(element).then((_) {
             update();
+            element.refresh();
           });
           return element;
         }),
@@ -118,6 +120,7 @@ class Restcontroller extends GetxController {
       if (f.value.posterData.isEmpty) {
         getImage(f).then((_) {
           update();
+          f.refresh();
         });
       }
     } else {
@@ -133,6 +136,7 @@ class Restcontroller extends GetxController {
     );
     if (resp.statusCode == 200) {
       film.value.posterData = resp.bodyBytes;
+      film.refresh();
     }
   }
 }

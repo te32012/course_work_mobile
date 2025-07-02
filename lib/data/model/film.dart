@@ -44,9 +44,32 @@ class Film {
   String description = '';
   Uint8List posterData = Uint8List(0);
 
-
   factory Film.fromJson(Map<String, dynamic> json) => _filmFromJson(json);
   Map<String, dynamic> toJson() => _toJson(this);
+
+  @override
+  bool operator ==(Object other) =>
+      other is Film &&
+      other.filmId == filmId &&
+      nameRu == other.nameRu &&
+      countries == other.countries &&
+      genres == other.genres &&
+      year == other.year &&
+      posterUrl == other.posterUrl &&
+      description == other.description &&
+      posterData == other.posterData;
+
+  @override
+  int get hashCode =>
+      (filmId +
+          31 * nameRu.hashCode +
+          31 * 31 * countries.hashCode +
+          31 * 31 * 31 * genres.hashCode +
+          31 * 31 * 31 * 31 * year.hashCode +
+          31 * 31 * 31 * 31 * 31 * posterUrl.hashCode +
+          31 * 31 * 31 * 31 * 31 * 31 * description.hashCode +
+          31 * 31 * 31 * 31 * 31 * 31 * 31 * posterData.hashCode) %
+      (1_000_000_000 + 7);
 
   static Film _filmFromJson(Map<String, dynamic> jsonMap) {
     Film current = Film();
@@ -72,7 +95,11 @@ class Film {
     } else if (year is num) {
       current.year = year.toString();
     }
-    var list = (jsonMap["posterData"] as List<dynamic>?)?.map((element) => (element as num).toInt()).toList() ?? [];
+    var list =
+        (jsonMap["posterData"] as List<dynamic>?)
+            ?.map((element) => (element as num).toInt())
+            .toList() ??
+        [];
     current.posterData = Uint8List.fromList(list);
     return current;
   }
@@ -86,7 +113,7 @@ class Film {
       'genres': film.genres.map((elemenet) => elemenet.toJson()).toList(),
       'countries': film.genres.map((element) => element.toJson()).toList(),
       'year': film.year,
-      'posterData': film.posterData.toList()
+      'posterData': film.posterData.toList(),
     };
   }
 }
