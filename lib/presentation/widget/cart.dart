@@ -15,9 +15,11 @@ class PosterCart extends StatelessWidget {
           padding: EdgeInsets.all(10),
           height: 160,
           width: 80,
-          child: film.value.posterData.isNotEmpty
-              ? Obx(() => Image.memory(film.value.posterData))
-              : Image.asset("assets/images/not_found.png"),
+          child: Obx(
+            () => film.value.posterData.isNotEmpty
+                ? Image.memory(film.value.posterData)
+                : Image.asset("assets/images/not_found.png"),
+          ),
         ),
         Expanded(
           child: Column(
