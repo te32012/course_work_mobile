@@ -1,14 +1,11 @@
 import 'dart:io';
 import 'package:course_work/data/model/film.dart';
-import 'package:course_work/presentation/search.dart';
+import 'package:course_work/view/search.dart';
 import 'package:path/path.dart';
 import 'package:course_work/controller/rest_controller.dart';
 import 'package:course_work/data/repository/favorite_film_repository.dart';
 import 'package:course_work/data/repository/tmp_film_repository.dart';
-import 'package:course_work/presentation/main.dart';
-import 'package:course_work/presentation/search_error_film.dart';
-import 'package:course_work/presentation/search_not_found.dart';
-import 'package:course_work/presentation/waiting.dart';
+import 'package:course_work/view/main.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,9 +14,6 @@ import 'package:sqflite/sqflite.dart';
 class Routes {
   static final String popular = '/popular';
   static final String favorite = '/favorite';
-  static final String searchErrorFound = '/SearchErrorFound';
-  static final String searchNotFound = '/searchNotFound';
-  static final String waiting = '/waiting';
   static final String findPage = '/find';
 }
 
@@ -72,21 +66,6 @@ final getPages = [
         ),
       );
     },
-  ),
-
-  GetPage(
-    name: Routes.searchErrorFound,
-    page: () => SafeArea(child: Scaffold(body: SearchErrorFound())),
-  ),
-
-  GetPage(
-    name: Routes.searchNotFound,
-    page: () => SafeArea(child: Scaffold(body: SearchNotFound())),
-  ),
-
-  GetPage(
-    name: Routes.waiting,
-    page: () => SafeArea(child: Scaffold(body: Waiting())),
   ),
 ];
 

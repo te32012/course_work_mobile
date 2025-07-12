@@ -1,6 +1,6 @@
 import 'package:course_work/controller/rest_controller.dart';
-import 'package:course_work/presentation/about_film.dart';
-import 'package:course_work/presentation/widget/cart.dart';
+import 'package:course_work/view/about_film.dart';
+import 'package:course_work/view/widget/cart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

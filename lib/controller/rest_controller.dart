@@ -85,15 +85,21 @@ class Restcontroller extends GetxController {
     );
     if (response.statusCode == 200) {
       search.value.films.addAll(
-        FilmsRequest.fromJson(
-          jsonDecode(response.body) as Map<String, dynamic>,
-        ).items.map((element) => element.obs).map((element) {
-          getImage(element).then((_) {
-            update();
-            element.refresh();
-          });
-          return element;
-        }),
+        FilmsRequest.fromJson(jsonDecode(response.body) as Map<String, dynamic>)
+            .items
+            .map((element) => element.obs)
+            .map((element) {
+              getImage(element).then((_) {
+                update();
+                element.refresh();
+              });
+              return element;
+            })
+            .map((element) {
+              element.refresh();
+              return element;
+            })
+            .toList(),
       );
       countSearch++;
       isLoadingSearch = false;
@@ -123,6 +129,7 @@ class Restcontroller extends GetxController {
           f.refresh();
         });
       }
+      f.refresh();
     } else {
       throw Exception("failed to download top films");
     }
