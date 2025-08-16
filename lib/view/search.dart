@@ -1,13 +1,17 @@
-import 'package:course_work/controller/rest_controller.dart';
+import 'package:course_work/bloc/search_bloc.dart';
+import 'package:course_work/cubit/about_film_cubit.dart';
+import 'package:course_work/data/repository/api/lenta_api_repository.dart';
+import 'package:course_work/state/search_state.dart';
 import 'package:course_work/view/about_film.dart';
 import 'package:course_work/view/widget/cart.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class Search extends GetView<Restcontroller> {
-  Rx<TextEditingController> text;
+class Search extends StatelessWidget {
 
-  Search(this.text, {super.key});
+  TextEditingController text;
+
+  Search(this.text);
 
   @override
   Widget build(BuildContext context) {
@@ -18,54 +22,55 @@ class Search extends GetView<Restcontroller> {
         children: [
           Flexible(
             flex: 11,
-            child: Obx(() {
-              return NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification scrollInfo) {
-                  if (!scrollInfo.metrics.atEdge) {
-                    return false; // Если не достигли края
-                  }
-                  if (scrollInfo.metrics.pixels == 0) {
-                    return false; // Если на верхней части
-                  }
-                  print("search");
-                  controller.fetchPageByKeyword(
-                    text.value.text,
-                  ); // Загружаем новые данные
-                  text.refresh();
-                  return true; //
-                },
-                child: ListView.builder(
-                  itemCount: controller.search.value.films.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () async {
-                        controller.fetchAdditionalAboutFilm(
-                          controller.search.value.films[index],
-                        ).then((_) {
-                          controller.update();
-                        });
-                        Get.to(
-                          () => SafeArea(
-                            child: Scaffold(
-                              appBar: AppBar(),
-                              body: AboutFilm(
-                                controller.search.value.films[index],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                      child: PosterCart(
-                        controller.buttonPressed,
-                        controller.search.value.films[index],
-                        controller.storage.value.hasElement(
-                          controller.search.value.films[index].value.filmId,
-                        ),
-                      ),
-                    );
+            child: BlocBuilder<SearchBloc, SearchState>( builder: (context, state)  {
+              if (state is SearchStateSucsess) {
+                var currState = state;
+                return NotificationListener<ScrollNotification>(
+                  onNotification: (ScrollNotification scrollInfo) {
+                    if (!scrollInfo.metrics.atEdge) {
+                      return false; // Если не достигли края
+                    }
+                    if (scrollInfo.metrics.pixels == 0) {
+                      return false; // Если на верхней части
+                    }
+                    print("search");
+                    context.read<SearchBloc>().searchApiRepository.fetchPageByKeyword(text.text);
+                    return true; //
                   },
-                ),
-              );
+                  child: ListView.builder(
+                    itemCount: currState.items.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () async {
+                          context.read<AboutFilmCubit>().setFilmState(currState.items[index]);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (BuildContext context) {
+                                return SafeArea(
+                                  child: Scaffold(
+                                    appBar: AppBar(),
+                                    body: AboutFilm(),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        }
+                        child: PosterCart(
+                          controller.buttonPressed,
+                          controller.search.value.films[index],
+                          controller.storage.value.hasElement(
+                            controller.search.value.films[index].value.filmId,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+                } else {
+                  return Text("not fount");
+                }
             }),
           ),
           Spacer(flex: 1),

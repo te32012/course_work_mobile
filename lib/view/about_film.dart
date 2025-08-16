@@ -1,11 +1,10 @@
-import 'package:course_work/data/model/film.dart';
+import 'package:course_work/cubit/about_film_cubit.dart';
+import 'package:course_work/state/about_film_state.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AboutFilm extends StatelessWidget {
-  final Rx<Film> film;
-
-  const AboutFilm(this.film, {super.key});
+  const AboutFilm({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +19,18 @@ class AboutFilm extends StatelessWidget {
               children: [
                 Padding(
                   padding: EdgeInsetsGeometry.all(20),
-                  child: film.value.posterData.isNotEmpty
-                      ? Obx(() => Image.memory(film.value.posterData))
-                      : Image.asset("assets/images/not_found.png"),
+                  child: BlocBuilder<AboutFilmCubit, AboutFilmState>(
+                    builder: (context, state) {
+                      return switch (state) {
+                        AboutFilmEmptyState() => Image.asset(
+                          "assets/images/not_found.png",
+                        ),
+                        AboutFilmWithFilmState() => Image.memory(
+                          state.film.posterData,
+                        ),
+                      };
+                    },
+                  ),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,11 +40,16 @@ class AboutFilm extends StatelessWidget {
                         vertical: 10,
                         horizontal: 20,
                       ),
-                      child: Obx(
-                        () => Text(
-                          film.value.nameRu,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                      child: BlocBuilder<AboutFilmCubit, AboutFilmState>(
+                        builder: (context, state) {
+                          return switch (state) {
+                            AboutFilmEmptyState() => const Text("not found"),
+                            AboutFilmWithFilmState() => Text(
+                              state.film.nameRu,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          };
+                        },
                       ),
                     ),
                     Padding(
@@ -44,12 +57,16 @@ class AboutFilm extends StatelessWidget {
                         vertical: 10,
                         horizontal: 20,
                       ),
-                      child: Obx(
-                        () => Text(
-                          film.value.description,
-                          softWrap: true,
-                          overflow: TextOverflow.clip,
-                        ),
+                      child: BlocBuilder<AboutFilmCubit, AboutFilmState>(
+                        builder: (context, state) {
+                          return switch (state) {
+                            AboutFilmEmptyState() => const Text("not found"),
+                            AboutFilmWithFilmState() => Text(
+                              state.film.description,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          };
+                        },
                       ),
                     ),
                     Row(
@@ -69,17 +86,23 @@ class AboutFilm extends StatelessWidget {
                             vertical: 10,
                             horizontal: 20,
                           ),
-                          child: Obx(
-                            () => Text(
-                              film.value.genres != null &&
-                                      film.value.genres.isNotEmpty
-                                  ? film.value.genres
-                                        .map((e) => e.genre)
-                                        .take(2)
-                                        .reduce((e1, e2) => "$e1, $e2")
-                                  : "жанр не указан",
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                          child: BlocBuilder<AboutFilmCubit, AboutFilmState>(
+                            builder: (context, state) {
+                              return switch (state) {
+                                AboutFilmEmptyState() => const Text(
+                                  "not found",
+                                ),
+                                AboutFilmWithFilmState() => Text(
+                                  state.film.genres.isNotEmpty
+                                      ? state.film.genres
+                                            .map((e) => e.genre)
+                                            .take(2)
+                                            .reduce((e1, e2) => "$e1, $e2")
+                                      : "жанр не указан",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              };
+                            },
                           ),
                         ),
                       ],
@@ -95,21 +118,27 @@ class AboutFilm extends StatelessWidget {
                         ),
                         Padding(
                           padding: EdgeInsetsGeometry.all(20),
-                          child: Obx(
-                            () => Text(
-                              film.value.countries != null &&
-                                      film.value.countries.isNotEmpty
-                                  ? film.value.countries
-                                        .map((e) {
-                                          return e.country.isNotEmpty
-                                              ? e.country
-                                              : '';
-                                        })
-                                        .take(2)
-                                        .reduce((e1, e2) => "$e1, $e2")
-                                  : "страна не указана",
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                          child: BlocBuilder<AboutFilmCubit, AboutFilmState>(
+                            builder: (context, state) {
+                              return switch (state) {
+                                AboutFilmEmptyState() => const Text(
+                                  "not found",
+                                ),
+                                AboutFilmWithFilmState() => Text(
+                                  state.film.countries.isNotEmpty
+                                      ? state.film.countries
+                                            .map((e) {
+                                              return e.country.isNotEmpty
+                                                  ? e.country
+                                                  : '';
+                                            })
+                                            .take(2)
+                                            .reduce((e1, e2) => "$e1, $e2")
+                                      : "страна не указана",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              };
+                            },
                           ),
                         ),
                       ],
@@ -123,6 +152,4 @@ class AboutFilm extends StatelessWidget {
       ],
     );
   }
-
-
 }

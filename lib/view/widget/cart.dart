@@ -1,12 +1,15 @@
 import 'package:course_work/data/model/film.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 class PosterCart extends StatelessWidget {
-  final Rx<Film> film;
+  final Film film;
   bool isFavoriteCart = false;
   final Function(Film film, bool isFaivorite) buttonPressed;
   PosterCart(this.buttonPressed, this.film, this.isFavoriteCart, {super.key});
+  PosterCart();
+  
   @override
   Widget build(BuildContext context) {
     return Row(

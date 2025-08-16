@@ -1,17 +1,16 @@
 import 'package:course_work/data/model/film.dart';
-import 'package:get/get.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:convert';
 
 class WarpFilm {
-  final Rx<Film> film;
+  final Film film;
   WarpFilm(this.film);
 }
 
-class FavoriteFilmRepository extends GetxService {
+class FavoriteFilmRepository {
   final Database _db;
-  final storageMap = <int, WarpFilm>{}.obs;
-  final storageList = <WarpFilm>[].obs;
+  final storageMap = <int, WarpFilm>{};
+  final storageList = <WarpFilm>[];
 
 
   FavoriteFilmRepository(this._db);
@@ -19,16 +18,16 @@ class FavoriteFilmRepository extends GetxService {
   void init() {
     getAll().then((onValue) {
       onValue!.map((film) {
-        storageMap[film.value.filmId] = WarpFilm(film);
-        storageList.add(storageMap[film.value.filmId]!);
+        storageMap[film.filmId] = WarpFilm(film);
+        storageList.add(storageMap[film.filmId]!);
       }).toList();
     });
   }
 
-  Future<int> insertFilm(Rx<Film> film) async {
-    storageMap[film.value.filmId] = WarpFilm(film);
-    storageList.add(storageMap[film.value.filmId]!);
-    return _db.insert('films', filmToJsonMap(film.value));
+  Future<int> insertFilm(Film film) async {
+    storageMap[film.filmId] = WarpFilm(film);
+    storageList.add(storageMap[film.filmId]!);
+    return _db.insert('films', filmToJsonMap(film));
   }
 
   Future<int> deleteFilm(int id) async {
@@ -39,9 +38,9 @@ class FavoriteFilmRepository extends GetxService {
     return _db.delete('films', where: 'idFilm=?', whereArgs: [id]);
   }
 
-  Future<List<Rx<Film>>?> getAll() async {
+  Future<List<Film>?> getAll() async {
     return _db.rawQuery('SELECT idFilm, data FROM films').then((v) {
-      return v.map((l) => jsonMapToFilm(l)).map((value) => value.obs).toList();
+      return v.map((l) => jsonMapToFilm(l)).toList();
     });
   }
 
