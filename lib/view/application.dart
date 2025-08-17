@@ -1,6 +1,12 @@
 import 'dart:io';
+import 'package:course_work/bloc/search_bloc.dart';
+import 'package:course_work/cubit/about_film_cubit.dart';
+import 'package:course_work/cubit/lenta_cubit.dart';
 import 'package:course_work/data/model/film.dart';
+import 'package:course_work/data/repository/api/additional_film_api_repository.dart';
+import 'package:course_work/data/repository/api/search_api_repository.dart';
 import 'package:course_work/view/search.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart';
 import 'package:course_work/data/repository/api/lenta_api_repository.dart';
 import 'package:course_work/data/repository/storage/favorite_film_repository.dart';
@@ -100,27 +106,36 @@ void main() async {
   r.fetchPageByKeyword("балерина");
   print(r.search.value.films);
     */
-  Get.put(
-    Restcontroller(
-      FavoriteFilmRepository(db).obs,
-      TmpFilmRepository().obs,
-      TmpFilmRepository().obs,
-    ),
-  );
-  Get.find<Restcontroller>().storage.value.init();
-  runApp(const MyApp());
+  FavoriteFilmRepository favoriteFilmRepository = FavoriteFilmRepository(db);
+  AdditionalApiRepository additionalApiRepository = AdditionalApiRepository();
+  LentaApiRepository lentaApiRepository = LentaApiRepository();
+  SearchApiRepository searchApiRepository = SearchApiRepository();
+  runApp(MyApp(favoriteFilmRepository, additionalApiRepository, lentaApiRepository, searchApiRepository));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+
+  final FavoriteFilmRepository favoriteFilmRepository;
+  final AdditionalApiRepository additionalApiRepository;
+  final LentaApiRepository lentaApiRepository;
+  final SearchApiRepository searchApiRepository;
+
+  const MyApp(this.favoriteFilmRepository, this.additionalApiRepository, this.lentaApiRepository, this.searchApiRepository, {super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+
+    LentaCubit lentaCubit = LentaCubit(lentaApiRepository);
+    lentaCubit.init(favoriteFilmRepository);
+
+    return MultiBlocProvider(providers: [
+      BlocProvider<SearchBloc>(create: (BuildContext build) => SearchBloc(searchApiRepository)),
+      BlocProvider<AboutFilmCubit>(create: (BuildContext build) => AboutFilmCubit(additionalApiRepository)),
+      BlocProvider<LentaCubit>(create: (BuildContext build) => lentaCubit)     
+    ], child:  MaterialApp(
       title: 'Flutter Demo',
       initialRoute: Routes.popular,
-      getPages: getPages,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -138,6 +153,10 @@ class MyApp extends StatelessWidget {
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
       ),
-    );
+      routes: {
+        Routes.popular: (context) => const Lenta(),
+        Routes.findPage: (context) => Search(TextEditingController()),
+      },
+    ));
   }
 }
