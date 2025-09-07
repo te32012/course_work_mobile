@@ -1,8 +1,11 @@
 import 'package:course_work/cubit/about_film_cubit.dart';
+import 'package:course_work/cubit/global_cubit.dart';
 import 'package:course_work/cubit/lenta_cubit.dart';
 import 'package:course_work/data/repository/api/lenta_api_repository.dart';
+import 'package:course_work/state/global_state.dart';
 import 'package:course_work/state/lenta_state.dart';
 import 'package:course_work/view/about_film.dart';
+import 'package:course_work/view/application.dart';
 import 'package:course_work/view/widget/cart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,25 +55,9 @@ class Lenta extends StatelessWidget {
                         return GestureDetector(
                           onTap: () {
                             context.read<AboutFilmCubit>().setFilmState(f);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute<void>(
-                                builder: (BuildContext context) {
-                                  return SafeArea(
-                                    child: Scaffold(
-                                      appBar: AppBar(),
-                                      body: AboutFilm(),
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
+                            Navigator.pushNamed(context, Routes.about_film);
                           },
-                          child: PosterCart(
-                            controller.buttonPressed,
-                            f,
-                            controller.storage.value.hasElement(f.value.filmId),
-                          ),
+                          child: PosterCart(f),
                         );
                       },
                     ),

@@ -1,15 +1,14 @@
+import 'package:course_work/cubit/global_cubit.dart';
 import 'package:course_work/data/model/film.dart';
+import 'package:course_work/state/global_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 
 class PosterCart extends StatelessWidget {
-
   final Film film;
-  bool isFavoriteCart = false;
-  final Function(Film film, bool isFaivorite) buttonPressed;
-  PosterCart(this.buttonPressed, this.film, this.isFavoriteCart, {super.key});
-  
+  // final Future<> Function(Film film, bool isFaivorite) buttonPressed;
+  const PosterCart(this.film, {super.key});
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -18,10 +17,14 @@ class PosterCart extends StatelessWidget {
           padding: EdgeInsets.all(10),
           height: 160,
           width: 80,
-          child: Obx(
-            () => film.value.posterData.isNotEmpty
-                ? Image.memory(film.value.posterData)
-                : Image.asset("assets/images/not_found.png"),
+          child: BlocBuilder<GlobalCubit, GlobalState>(
+            builder: (BuildContext context, GlobalState state) {
+              if (film.posterData.isNotEmpty) {
+                return Image.memory(film.posterData);
+              } else {
+                return Image.asset("assets/images/not_found.png");
+              }
+            },
           ),
         ),
         Expanded(
@@ -33,7 +36,7 @@ class PosterCart extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      film.value.nameRu,
+                      film.nameRu,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -49,7 +52,7 @@ class PosterCart extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    "${film.value.genres != null && film.value.genres.isNotEmpty ? film.value.genres.map((e) => e.genre).take(2).reduce((e1, e2) => "$e1, $e2") : "жанр не указан"} (${film.value.year ?? 'без года'})",
+                    "${film.genres.isNotEmpty ? film.genres.map((e) => e.genre).take(2).reduce((e1, e2) => "$e1, $e2") : "жанр не указан"} (${film.year ?? "без года"})",
                     style: TextStyle(fontSize: 12),
                   ),
                 ],
@@ -57,23 +60,26 @@ class PosterCart extends StatelessWidget {
             ],
           ),
         ),
-        GestureDetector(
-          onTap: () {
-            isFavoriteCart = !isFavoriteCart;
-            buttonPressed(film.value, isFavoriteCart);
+        BlocBuilder<GlobalCubit, GlobalState>(
+          builder: (BuildContext context, GlobalState state) {
+            return GestureDetector(
+              onTap: () {
+                if (state.items.containsKey(film.filmId)) {
+                  context.read<GlobalCubit>().add(<int, Film>{film.filmId: film});
+                } else {
+                  context.read<GlobalCubit>().remove(<int, Film>{film.filmId: film});
+                }
+              },
+              child: (state.items.containsKey(film.filmId))
+                  ? Icon(Icons.favorite, color: Color.fromRGBO(8, 21, 198, 1))
+                  : Icon(
+                      Icons.favorite_border,
+                      color: Color.fromRGBO(8, 21, 198, 1),
+                    ),
+            );
           },
-          child: (isFavoriteCart)
-              ? Icon(Icons.favorite, color: Color.fromRGBO(8, 21, 198, 1))
-              : Icon(
-                  Icons.favorite_border,
-                  color: Color.fromRGBO(8, 21, 198, 1),
-                ),
         ),
       ],
     );
   }
-}
-
-extension on Rx<Film> {
-  get year => null;
 }
