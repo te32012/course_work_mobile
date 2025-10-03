@@ -1,6 +1,7 @@
-import 'package:course_work/cubit/global_cubit.dart';
-import 'package:course_work/data/model/film.dart';
-import 'package:course_work/state/global_state.dart';
+/*
+import 'package:course_work/viewModel/cubitAndBloc/cubit/global_cubit.dart';
+import 'package:course_work/model/entity/film.dart';
+import 'package:course_work/viewModel/cubitAndBloc/state/global_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -83,3 +84,4 @@ class PosterCart extends StatelessWidget {
     );
   }
 }
+*/

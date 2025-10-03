@@ -1,31 +1,26 @@
+/*
 import 'dart:io';
-import 'package:course_work/bloc/search_bloc.dart';
-import 'package:course_work/cubit/about_film_cubit.dart';
-import 'package:course_work/cubit/global_cubit.dart';
-import 'package:course_work/cubit/lenta_cubit.dart';
-import 'package:course_work/data/model/film.dart';
+import 'package:course_work/viewModel/cubitAndBloc/cubit/search_cubit.dart';
+import 'package:course_work/viewModel/cubitAndBloc/cubit/about_film_cubit.dart';
+import 'package:course_work/viewModel/cubitAndBloc/cubit/global_cubit.dart';
+import 'package:course_work/viewModel/cubitAndBloc/cubit/popular_cubit.dart';
+import 'package:course_work/model/entity/film.dart';
 import 'package:course_work/data/repository/api/additional_film_api_repository.dart';
 import 'package:course_work/data/repository/api/search_api_repository.dart';
-import 'package:course_work/event/search_event.dart';
-import 'package:course_work/state/lenta_state.dart';
-import 'package:course_work/state/search_state.dart';
+import 'package:course_work/viewModel/cubitAndBloc/event/search_event.dart';
+import 'package:course_work/viewModel/cubitAndBloc/state/popular_state.dart';
+import 'package:course_work/viewModel/cubitAndBloc/state/search_state.dart';
 import 'package:course_work/view/about_film.dart';
 import 'package:course_work/view/search.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart';
 import 'package:course_work/data/repository/api/lenta_api_repository.dart';
-import 'package:course_work/data/repository/storage/favorite_film_repository.dart';
-import 'package:course_work/view/lenta.dart';
+import 'package:course_work/model/repository/storage/favorite_film_repository.dart';
+import 'package:course_work/view/widget/lenta.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-class Routes {
-  static final String popular = '/popular';
-  static final String favorite = '/favorite';
-  static final String findPage = '/find';
-  static final String about_film = '/aboutFilm';
-}
 
 Future<Directory> getDir() async {
   final dir = getApplicationDocumentsDirectory();
@@ -183,3 +178,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+*/
