@@ -57,18 +57,22 @@ class MyApp extends StatelessWidget {
     LoadTopFilmsUc _loadTopFilmsUc = LoadTopFilmsUc(_filmService);
     RemoveFilmsFromFavUc _removeFilmsFromFavUc = RemoveFilmsFromFavUc(_filmService);
     SearchFilmsUc _searchFilmsUc = SearchFilmsUc(_filmService);
-
+    
+    PopularCubit popularCubit = PopularCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _loadTopFilmsUc);
+    popularCubit.init(); // Где 
+    FavoriteCubit favoriteCubit = FavoriteCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _loadFavoriteFilmsUc);
+    favoriteCubit.init();
     return MultiBlocProvider(
       providers: [
         BlocProvider<SearchCubit>(
-          create: (BuildContext build) => SearchCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _searchFilmsUc),
+          create: (BuildContext build) => SearchCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _searchFilmsUc)
         ),
         BlocProvider<AboutFilmCubit>(
           create: (BuildContext build) =>
               AboutFilmCubit(_aboutFilmsUc),
         ),
-        BlocProvider<PopularCubit>(create: (BuildContext build) => PopularCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _loadTopFilmsUc)),
-        BlocProvider<FavoriteCubit>(create: (context) => FavoriteCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _loadFavoriteFilmsUc)),
+        BlocProvider<PopularCubit>(create: (BuildContext build) => popularCubit),
+        BlocProvider<FavoriteCubit>(create: (context) => favoriteCubit),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
