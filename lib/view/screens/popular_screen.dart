@@ -128,14 +128,28 @@ class PopularScreen extends StatelessWidget {
                                       ) {
                                         return GestureDetector(
                                           onTap: () {
-                                            if (state.items[index].isFaivorite) {
-                                              context.read<PopularCubit>().removeFilmFromFav(state.items[index].filmId);
+                                            if (state
+                                                .items[index]
+                                                .isFaivorite) {
+                                              context
+                                                  .read<PopularCubit>()
+                                                  .removeFilmFromFav(
+                                                    state.items[index].filmId,
+                                                  );
                                             } else {
-                                              context.read<PopularCubit>().addFilmsToFavUc(state.items[index]);
+                                              context
+                                                  .read<PopularCubit>()
+                                                  .addFilmsToFavUc(
+                                                    state.items[index],
+                                                  );
                                             }
                                           },
                                           child:
-                                              (context.read<PopularCubit>().hasElementInStorage(state.items[index].filmId))
+                                              (context
+                                                  .read<PopularCubit>()
+                                                  .hasElementInStorage(
+                                                    state.items[index].filmId,
+                                                  ))
                                               ? Icon(
                                                   Icons.favorite,
                                                   color: Color.fromRGBO(
@@ -180,7 +194,10 @@ class PopularScreen extends StatelessWidget {
                       ),
                       FilledButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, Routes.favorite);
+                          Navigator.pushReplacementNamed(
+                            context,
+                            Routes.favorite,
+                          );
                         },
                         child: Text(
                           "Избранные",

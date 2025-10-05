@@ -37,6 +37,7 @@ dependencies:
   path_provider: 
   http:
   sqflite:
+  sqflite_common_ffi:
   bloc:
   flutter_bloc: 
   equatable:

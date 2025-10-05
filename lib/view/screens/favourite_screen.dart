@@ -1,11 +1,7 @@
-import 'package:course_work/view/widget/cart.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/about_film_cubit.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/favorite_cubit.dart';
-import 'package:course_work/viewModel/cubitAndBloc/cubit/popular_cubit.dart';
 import 'package:course_work/main.dart';
 import 'package:course_work/viewModel/cubitAndBloc/state/favorite_state.dart';
-import 'package:course_work/viewModel/cubitAndBloc/state/popular_state.dart';
-import 'package:course_work/view/widget/lenta.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -67,23 +63,27 @@ class FavouriteScreen extends StatelessWidget {
                                   padding: EdgeInsets.all(10),
                                   height: 160,
                                   width: 80,
-                                  child: BlocBuilder<FavoriteCubit, FavoriteState>(
-                                    builder:
-                                        (
-                                          BuildContext context,
-                                          FavoriteState state,
-                                        ) {
-                                          if (state.items[index].posterData.isNotEmpty) {
-                                            return Image.memory(
-                                              state.items[index].posterData,
-                                            );
-                                          } else {
-                                            return Image.asset(
-                                              "assets/images/not_found.png",
-                                            );
-                                          }
-                                        },
-                                  ),
+                                  child:
+                                      BlocBuilder<FavoriteCubit, FavoriteState>(
+                                        builder:
+                                            (
+                                              BuildContext context,
+                                              FavoriteState state,
+                                            ) {
+                                              if (state
+                                                  .items[index]
+                                                  .posterData
+                                                  .isNotEmpty) {
+                                                return Image.memory(
+                                                  state.items[index].posterData,
+                                                );
+                                              } else {
+                                                return Image.asset(
+                                                  "assets/images/not_found.png",
+                                                );
+                                              }
+                                            },
+                                      ),
                                 ),
                                 Expanded(
                                   child: Column(
@@ -128,14 +128,28 @@ class FavouriteScreen extends StatelessWidget {
                                       ) {
                                         return GestureDetector(
                                           onTap: () {
-                                            if (state.items[index].isFaivorite) {
-                                              context.read<FavoriteCubit>().removeFilmFromFav(state.items[index].filmId);
+                                            if (state
+                                                .items[index]
+                                                .isFaivorite) {
+                                              context
+                                                  .read<FavoriteCubit>()
+                                                  .removeFilmFromFav(
+                                                    state.items[index].filmId,
+                                                  );
                                             } else {
-                                              context.read<FavoriteCubit>().addFilmsToFavUc(state.items[index]);
+                                              context
+                                                  .read<FavoriteCubit>()
+                                                  .addFilmsToFavUc(
+                                                    state.items[index],
+                                                  );
                                             }
                                           },
                                           child:
-                                              (context.read<FavoriteCubit>().hasElementInStorage(state.items[index].filmId))
+                                              (context
+                                                  .read<FavoriteCubit>()
+                                                  .hasElementInStorage(
+                                                    state.items[index].filmId,
+                                                  ))
                                               ? Icon(
                                                   Icons.favorite,
                                                   color: Color.fromRGBO(
@@ -173,7 +187,10 @@ class FavouriteScreen extends StatelessWidget {
                     children: [
                       FilledButton.tonal(
                         onPressed: () {
-                          Navigator.pushNamed(context, Routes.popular);
+                          Navigator.pushReplacementNamed(
+                            context,
+                            Routes.popular,
+                          );
                         },
                         child: Text(
                           "Популярные",

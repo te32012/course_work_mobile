@@ -1,16 +1,21 @@
-
-
 import 'package:course_work/model/entity/film.dart';
 import 'package:course_work/viewModel/cubitAndBloc/state/favorite_state.dart';
 import 'package:course_work/viewModel/usecase/add_films_to_fav_uc.dart';
+import 'package:course_work/viewModel/usecase/get_image_uc.dart';
 import 'package:course_work/viewModel/usecase/has_element_in_storage_uc.dart';
 import 'package:course_work/viewModel/usecase/load_favorite_films_uc.dart';
 import 'package:course_work/viewModel/usecase/remove_films_from_fav_uc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FavoriteCubit extends Cubit<FavoriteState> {
-
-  FavoriteCubit(this._addFilmsToFavUc, this._removeFilmsFromFavUc, this._hasElementInStorageUc, this._loadFavoriteFilmsUc) : super(FavoriteState([]));
+  FavoriteCubit(
+    this._addFilmsToFavUc,
+    this._removeFilmsFromFavUc,
+    this._hasElementInStorageUc,
+    this._loadFavoriteFilmsUc,
+  ) : super(FavoriteState([])) {
+    init();
+  }
 
   final AddFilmsToFavUc _addFilmsToFavUc;
   final RemoveFilmsFromFavUc _removeFilmsFromFavUc;
@@ -62,6 +67,7 @@ class FavoriteCubit extends Cubit<FavoriteState> {
     }).toList();
     emit(FavoriteState(ans));
   }
+
   bool hasElementInStorage(int id) {
     return _hasElementInStorageUc.use(id);
   }
