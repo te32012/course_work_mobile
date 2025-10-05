@@ -46,6 +46,7 @@ class FavouriteScreen extends StatelessWidget {
                         if (scrollInfo.metrics.pixels == 0) {
                           return false; // Если на верхней части
                         }
+                        print("scroll");
                         context
                             .read<FavoriteCubit>()
                             .nextFilm(); // Загружаем новые данные
@@ -61,103 +62,136 @@ class FavouriteScreen extends StatelessWidget {
                               );
                               Navigator.pushNamed(context, Routes.aboutFilm);
                             },
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  height: 160,
-                                  width: 80,
-                                  child: BlocBuilder<FavoriteCubit, FavoriteState>(
-                                    builder:
-                                        (
-                                          BuildContext context,
-                                          FavoriteState state,
-                                        ) {
-                                          if (state.items[index].posterData.isNotEmpty) {
-                                            return Image.memory(
-                                              state.items[index].posterData,
-                                            );
-                                          } else {
-                                            return Image.asset(
-                                              "assets/images/not_found.png",
-                                            );
-                                          }
-                                        },
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Row(
+                            child: BlocBuilder<FavoriteCubit, FavoriteState>(
+                              builder: (BuildContext context, FavoriteState state) {
+                                return Row(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(10),
+                                      height: 160,
+                                      width: 80,
+                                      child:
+                                          BlocBuilder<
+                                            FavoriteCubit,
+                                            FavoriteState
+                                          >(
+                                            builder:
+                                                (
+                                                  BuildContext context,
+                                                  FavoriteState state,
+                                                ) {
+                                                  if (state
+                                                      .items[index]
+                                                      .posterData
+                                                      .isNotEmpty) {
+                                                    return Image.memory(
+                                                      state
+                                                          .items[index]
+                                                          .posterData,
+                                                    );
+                                                  } else {
+                                                    return Image.asset(
+                                                      "assets/images/not_found.png",
+                                                    );
+                                                  }
+                                                },
+                                          ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
                                         children: [
-                                          Expanded(
-                                            child: Text(
-                                              state.items[index].nameRu,
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                              softWrap: true,
-                                              maxLines: 1,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "${state.items[index].genres.isNotEmpty ? state.items[index].genres.map((e) => e.genre).take(2).reduce((e1, e2) => "$e1, $e2") : "жанр не указан"} (${state.items[index].year ?? "без года"})",
-                                            style: TextStyle(fontSize: 12),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                BlocBuilder<FavoriteCubit, FavoriteState>(
-                                  builder:
-                                      (
-                                        BuildContext context,
-                                        FavoriteState state,
-                                      ) {
-                                        return GestureDetector(
-                                          onTap: () {
-                                            if (state.items[index].isFaivorite) {
-                                              context.read<FavoriteCubit>().removeFilmFromFav(state.items[index].filmId);
-                                            } else {
-                                              context.read<FavoriteCubit>().addFilmsToFavUc(state.items[index]);
-                                            }
-                                          },
-                                          child:
-                                              (context.read<FavoriteCubit>().hasElementInStorage(state.items[index].filmId))
-                                              ? Icon(
-                                                  Icons.favorite,
-                                                  color: Color.fromRGBO(
-                                                    8,
-                                                    21,
-                                                    198,
-                                                    1,
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  state.items[index].nameRu,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
-                                                )
-                                              : Icon(
-                                                  Icons.favorite_border,
-                                                  color: Color.fromRGBO(
-                                                    8,
-                                                    21,
-                                                    198,
-                                                    1,
-                                                  ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  softWrap: true,
+                                                  maxLines: 1,
                                                 ),
-                                        );
-                                      },
-                                ),
-                              ],
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "${state.items[index].genres.isNotEmpty ? state.items[index].genres.map((e) => e.genre).take(2).reduce((e1, e2) => "$e1, $e2") : "жанр не указан"} (${state.items[index].year ?? "без года"})",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    BlocBuilder<FavoriteCubit, FavoriteState>(
+                                      builder:
+                                          (
+                                            BuildContext context,
+                                            FavoriteState state,
+                                          ) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                if (state
+                                                    .items[index]
+                                                    .isFaivorite) {
+                                                  context
+                                                      .read<FavoriteCubit>()
+                                                      .removeFilmFromFav(
+                                                        state
+                                                            .items[index]
+                                                            .filmId,
+                                                      );
+                                                } else {
+                                                  context
+                                                      .read<FavoriteCubit>()
+                                                      .addFilmsToFavUc(
+                                                        state.items[index],
+                                                      );
+                                                }
+                                              },
+                                              child:
+                                                  (context
+                                                      .read<FavoriteCubit>()
+                                                      .hasElementInStorage(
+                                                        state
+                                                            .items[index]
+                                                            .filmId,
+                                                      ))
+                                                  ? Icon(
+                                                      Icons.favorite,
+                                                      color: Color.fromRGBO(
+                                                        8,
+                                                        21,
+                                                        198,
+                                                        1,
+                                                      ),
+                                                    )
+                                                  : Icon(
+                                                      Icons.favorite_border,
+                                                      color: Color.fromRGBO(
+                                                        8,
+                                                        21,
+                                                        198,
+                                                        1,
+                                                      ),
+                                                    ),
+                                            );
+                                          },
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
                           );
                         },

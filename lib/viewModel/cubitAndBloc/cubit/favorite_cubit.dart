@@ -38,6 +38,7 @@ class FavoriteCubit extends Cubit<FavoriteState> {
       tmp.isFaivorite = _hasElementInStorageUc.use(e.filmId);
       return tmp;
     }).toList();
+    ans.removeWhere((element) => element.isFaivorite == false);
     emit(FavoriteState(tmp));
   }
 
@@ -49,6 +50,7 @@ class FavoriteCubit extends Cubit<FavoriteState> {
       tmp.isFaivorite = _hasElementInStorageUc.use(e.filmId);
       return tmp;
     }).toList();
+    ans.removeWhere((element) => element.isFaivorite == false);
     emit(FavoriteState(ans));
   }
 
@@ -60,6 +62,7 @@ class FavoriteCubit extends Cubit<FavoriteState> {
       tmp.isFaivorite = _hasElementInStorageUc.use(e.filmId);
       return tmp;
     }).toList();
+    ans.removeWhere((element) => element.isFaivorite == false);
     emit(FavoriteState(ans));
   }
   bool hasElementInStorage(int id) {

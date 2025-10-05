@@ -42,9 +42,11 @@ class PopularScreen extends StatelessWidget {
                         if (scrollInfo.metrics.pixels == 0) {
                           return false; // Если на верхней части
                         }
+                        print("scroll");
                         context
                             .read<PopularCubit>()
                             .nextFilm(); // Загружаем новые данные
+
                         return true; //
                       },
                       child: ListView.builder(
