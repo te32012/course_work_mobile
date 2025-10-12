@@ -1,32 +1,33 @@
-/*
+import 'package:course_work/main.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/about_film_cubit.dart';
-import 'package:course_work/viewModel/cubitAndBloc/cubit/global_cubit.dart';
+import 'package:course_work/viewModel/cubitAndBloc/cubit/favorite_cubit.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/popular_cubit.dart';
-import 'package:course_work/data/repository/api/lenta_api_repository.dart';
-import 'package:course_work/viewModel/cubitAndBloc/state/global_state.dart';
+import 'package:course_work/viewModel/cubitAndBloc/cubit/search_cubit.dart';
 import 'package:course_work/viewModel/cubitAndBloc/state/popular_state.dart';
-import 'package:course_work/view/about_film.dart';
-import 'package:course_work/view/application.dart';
 import 'package:course_work/view/widget/cart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Lenta extends StatelessWidget {
-  const Lenta({super.key});
+  const Lenta(this.type_lenta, {super.key});
+
+  // 1 - популярные, 2 - фавориты
+  final int type_lenta;
+
+  void onTapPopular() {}
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(15.00),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: BlocBuilder<LentaCubit, LentaState>(
-              builder: (context, state) {
-                if (state is LentaWithFilmsState) {
-                  var currentState = state;
-                  return NotificationListener<ScrollNotification>(
+    switch (type_lenta) {
+      case 1:
+        {
+          return Container(
+            padding: EdgeInsets.all(15.00),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: NotificationListener<ScrollNotification>(
                     onNotification: (ScrollNotification scrollInfo) {
                       if (!scrollInfo.metrics.atEdge) {
                         return false; // Если не достигли края
@@ -34,65 +35,137 @@ class Lenta extends StatelessWidget {
                       if (scrollInfo.metrics.pixels == 0) {
                         return false; // Если на верхней части
                       }
-                      context
-                          .read<LentaCubit>()
-                          .nextFilm(); // Загружаем новые данные
+                      context.read<PopularCubit>().nextFilm();
                       return true; //
                     },
                     child: ListView.builder(
-                      itemCount: currentState.isFaivorite
-                          ? currentState
-                                .favoriteFilmRepository
-                                .storageList
-                                .length
-                          : currentState.items.length,
+                      itemCount: context
+                          .read<PopularCubit>()
+                          .state
+                          .items
+                          .length,
                       itemBuilder: (BuildContext context, int index) {
-                        var f = currentState.isFaivorite
-                            ? currentState
-                                  .favoriteFilmRepository
-                                  .storageList[index]
-                                  .film
-                            : currentState.items[index];
+                        var f = context.read<PopularCubit>().state.items[index];
+                        func() async {
+                          var ok = await context
+                              .read<PopularCubit>()
+                              .hasElementInStorage(f.filmId);
+                          if (ok) {
+                            context.read<PopularCubit>().removeFilmFromFav(f.filmId);
+                          } else {
+                            context.read<PopularCubit>().addFilmsToFavUc(f);
+                          }
+                          context.read<PopularCubit>().updateFilmsStatus();
+                          context.read<FavoriteCubit>().updateFilmsStatus();
+                          context.read<SearchCubit>().updateFilmsStatus();
+                        }
                         return GestureDetector(
                           onTap: () {
                             context.read<AboutFilmCubit>().setFilmState(f);
-                            Navigator.pushNamed(context, Routes.about_film);
+                            Navigator.pushNamed(context, Routes.aboutFilm);
                           },
-                          child: PosterCart(f),
+                          child: PosterCart(f, func),
                         );
                       },
                     ),
-                  );
-                } else {
-                  return Text("not fount");
-                }
-              },
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FilledButton.tonal(
+                      onPressed: () {},
+                      child: Text("Популярные", style: TextStyle(fontSize: 14)),
+                    ),
+                    FilledButton(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          Routes.favorite,
+                        );
+                      },
+                      child: Text("Избранные", style: TextStyle(fontSize: 14)),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ),
-          BlocBuilder<LentaCubit, LentaState>(
-            builder: (context, state) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FilledButton.tonal(
-                    onPressed: () {
-                      context.read<LentaCubit>().changeFaivoriteSataus(false);
+          );
+        }
+      case 2:
+        {
+          return Container(
+            padding: EdgeInsets.all(15.00),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: NotificationListener<ScrollNotification>(
+                    onNotification: (ScrollNotification scrollInfo) {
+                      if (!scrollInfo.metrics.atEdge) {
+                        return false; // Если не достигли края
+                      }
+                      if (scrollInfo.metrics.pixels == 0) {
+                        return false; // Если на верхней части
+                      }
+                      context.read<PopularCubit>().nextFilm();
+                      return true; //
                     },
-                    child: Text("Популярные", style: TextStyle(fontSize: 14)),
+                    child: ListView.builder(
+                      itemCount: context
+                          .read<FavoriteCubit>()
+                          .state
+                          .items
+                          .length,
+                      itemBuilder: (BuildContext context, int index) {
+                        var f = context
+                            .read<FavoriteCubit>()
+                            .state
+                            .items[index];
+                        func() async {
+                          var ok = await context
+                              .read<FavoriteCubit>()
+                              .hasElementInStorage(f.filmId);
+                          if (ok) {
+                            context.read<FavoriteCubit>().removeFilmFromFav(f.filmId);
+                          } else {
+                            context.read<FavoriteCubit>().addFilmsToFavUc(f);
+                          }
+                          context.read<PopularCubit>().updateFilmsStatus();
+                          context.read<FavoriteCubit>().updateFilmsStatus();
+                          context.read<SearchCubit>().updateFilmsStatus();
+                        }
+                        return GestureDetector(
+                          onTap: () {
+                            context.read<AboutFilmCubit>().setFilmState(f);
+                            Navigator.pushNamed(context, Routes.aboutFilm);
+                          },
+                          child: PosterCart(f, func),
+                        );
+                      },
+                    ),
                   ),
-                  FilledButton(
-                    onPressed: () {
-                      context.read<LentaCubit>().changeFaivoriteSataus(true);
-                    },
-                    child: Text("Избранные", style: TextStyle(fontSize: 14)),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-    );
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FilledButton.tonal(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, Routes.popular);
+                      },
+                      child: Text("Популярные", style: TextStyle(fontSize: 14)),
+                    ),
+                    FilledButton(
+                      onPressed: () {},
+                      child: Text("Избранные", style: TextStyle(fontSize: 14)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }
+    }
+    return Text("пусто");
   }
 }
-*/

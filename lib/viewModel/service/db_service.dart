@@ -7,12 +7,12 @@ class DbService {
 
   DbService(this._dbRepo);
 
-  void insertFilm(Film film) {
-    _dbRepo.insertFilm(film);
+  Future<int> insertFilm(Film film) {
+    return _dbRepo.insertFilm(film);
   }
 
-  void deleteFilm(int id) {
-    _dbRepo.deleteFilm(id);
+  Future<int> deleteFilm(int id) {
+   return  _dbRepo.deleteFilm(id);
   }
 
   Future<List<Film>> getAll() async {
@@ -26,7 +26,7 @@ class DbService {
     }).first;
   }
 
-  bool hasElement(int id) {
+  Future<bool> hasElement(int id) async {
     return _dbRepo.hasElement(id);
   }
 

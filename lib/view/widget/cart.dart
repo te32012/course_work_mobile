@@ -1,14 +1,14 @@
-/*
-import 'package:course_work/viewModel/cubitAndBloc/cubit/global_cubit.dart';
 import 'package:course_work/model/entity/film.dart';
-import 'package:course_work/viewModel/cubitAndBloc/state/global_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PosterCart extends StatelessWidget {
   final Film film;
+
+  final Function onTap;
+
   // final Future<> Function(Film film, bool isFaivorite) buttonPressed;
-  const PosterCart(this.film, {super.key});
+  const PosterCart(this.film, this.onTap, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,15 +18,9 @@ class PosterCart extends StatelessWidget {
           padding: EdgeInsets.all(10),
           height: 160,
           width: 80,
-          child: BlocBuilder<GlobalCubit, GlobalState>(
-            builder: (BuildContext context, GlobalState state) {
-              if (film.posterData.isNotEmpty) {
-                return Image.memory(film.posterData);
-              } else {
-                return Image.asset("assets/images/not_found.png");
-              }
-            },
-          ),
+          child: film.posterData.isNotEmpty
+              ? Image.memory(film.posterData)
+              : Image.asset("assets/images/not_found.png"),
         ),
         Expanded(
           child: Column(
@@ -61,27 +55,18 @@ class PosterCart extends StatelessWidget {
             ],
           ),
         ),
-        BlocBuilder<GlobalCubit, GlobalState>(
-          builder: (BuildContext context, GlobalState state) {
-            return GestureDetector(
-              onTap: () {
-                if (state.items.containsKey(film.filmId)) {
-                  context.read<GlobalCubit>().add(<int, Film>{film.filmId: film});
-                } else {
-                  context.read<GlobalCubit>().remove(<int, Film>{film.filmId: film});
-                }
-              },
-              child: (state.items.containsKey(film.filmId))
-                  ? Icon(Icons.favorite, color: Color.fromRGBO(8, 21, 198, 1))
-                  : Icon(
-                      Icons.favorite_border,
-                      color: Color.fromRGBO(8, 21, 198, 1),
-                    ),
-            );
+        GestureDetector(
+          onTap: () {
+            onTap.call();
           },
+          child: (film.isFaivorite)
+              ? Icon(Icons.favorite, color: Color.fromRGBO(8, 21, 198, 1))
+              : Icon(
+                  Icons.favorite_border,
+                  color: Color.fromRGBO(8, 21, 198, 1),
+                ),
         ),
       ],
     );
   }
 }
-*/

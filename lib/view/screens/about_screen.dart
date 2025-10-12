@@ -9,166 +9,145 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(),
-        body: ListView(
-          children: [
-            Container(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height + 100,
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsetsGeometry.all(20),
-                      child: BlocBuilder<AboutFilmCubit, AboutFilmState>(
-                        builder: (context, state) {
-                          return switch (state) {
-                            AboutFilmEmptyState() => Image.asset(
-                              "assets/images/not_found.png",
-                            ),
-                            AboutFilmWithFilmState() => Image.memory(
-                              state.film.posterData,
-                            ),
-                          };
-                        },
+      child: BlocBuilder<AboutFilmCubit, AboutFilmWithFilmState>(
+        builder: (context, state) => Scaffold(
+          appBar: AppBar(),
+          body: ListView(
+            children: [
+              Container(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height + 100,
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsetsGeometry.all(20),
+                        child:
+                            context
+                                .read<AboutFilmCubit>()
+                                .state
+                                .film
+                                .posterData
+                                .isEmpty
+                            ? Image.asset("assets/images/not_found.png")
+                            : Image.memory(
+                                context
+                                    .read<AboutFilmCubit>()
+                                    .state
+                                    .film
+                                    .posterData,
+                              ),
                       ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsetsGeometry.symmetric(
-                            vertical: 10,
-                            horizontal: 20,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsetsGeometry.symmetric(
+                              vertical: 10,
+                              horizontal: 20,
+                            ),
+                            child: Text(
+                              context.read<AboutFilmCubit>().state.film.nameRu,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
-                          child: BlocBuilder<AboutFilmCubit, AboutFilmState>(
-                            builder: (context, state) {
-                              return switch (state) {
-                                AboutFilmEmptyState() => const Text(
-                                  "not found",
+                          Padding(
+                            padding: EdgeInsetsGeometry.symmetric(
+                              vertical: 10,
+                              horizontal: 20,
+                            ),
+                            child: Text(
+                              context
+                                  .read<AboutFilmCubit>()
+                                  .state
+                                  .film
+                                  .description,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsetsGeometry.symmetric(
+                                  vertical: 10,
+                                  horizontal: 20,
                                 ),
-                                AboutFilmWithFilmState() => Text(
-                                  state.film.nameRu,
+                                child: Text(
+                                  "Жанры:",
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
-                              };
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsetsGeometry.symmetric(
-                            vertical: 10,
-                            horizontal: 20,
-                          ),
-                          child: BlocBuilder<AboutFilmCubit, AboutFilmState>(
-                            builder: (context, state) {
-                              return switch (state) {
-                                AboutFilmEmptyState() => const Text(
-                                  "not found",
+                              ),
+                              Padding(
+                                padding: EdgeInsetsGeometry.symmetric(
+                                  vertical: 10,
+                                  horizontal: 20,
                                 ),
-                                AboutFilmWithFilmState() => Text(
-                                  state.film.description,
+                                child: Text(
+                                  context
+                                          .read<AboutFilmCubit>()
+                                          .state
+                                          .film
+                                          .genres
+                                          .isNotEmpty
+                                      ? context
+                                            .read<AboutFilmCubit>()
+                                            .state
+                                            .film
+                                            .genres
+                                            .map((e) => e.genre)
+                                            .take(2)
+                                            .reduce((e1, e2) => "$e1, $e2")
+                                      : "жанр не указан",
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
-                              };
-                            },
+                              ),
+                            ],
                           ),
-                        ),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsetsGeometry.symmetric(
-                                vertical: 10,
-                                horizontal: 20,
+                          Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsetsGeometry.all(20),
+                                child: Text(
+                                  "Страны:",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ),
-                              child: Text(
-                                "Жанры:",
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                              Padding(
+                                padding: EdgeInsetsGeometry.all(20),
+                                child: Text(
+                                  context
+                                          .read<AboutFilmCubit>()
+                                          .state
+                                          .film
+                                          .countries
+                                          .isNotEmpty
+                                      ? context
+                                            .read<AboutFilmCubit>()
+                                            .state
+                                            .film
+                                            .countries
+                                            .map((e) {
+                                              return e.country.isNotEmpty
+                                                  ? e.country
+                                                  : '';
+                                            })
+                                            .take(2)
+                                            .reduce((e1, e2) => "$e1, $e2")
+                                      : "страна не указана",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: EdgeInsetsGeometry.symmetric(
-                                vertical: 10,
-                                horizontal: 20,
-                              ),
-                              child:
-                                  BlocBuilder<AboutFilmCubit, AboutFilmState>(
-                                    builder: (context, state) {
-                                      return switch (state) {
-                                        AboutFilmEmptyState() => const Text(
-                                          "not found",
-                                        ),
-                                        AboutFilmWithFilmState() => Text(
-                                          state.film.genres.isNotEmpty
-                                              ? state.film.genres
-                                                    .map((e) => e.genre)
-                                                    .take(2)
-                                                    .reduce(
-                                                      (e1, e2) => "$e1, $e2",
-                                                    )
-                                              : "жанр не указан",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      };
-                                    },
-                                  ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsetsGeometry.all(20),
-                              child: Text(
-                                "Страны:",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsetsGeometry.all(20),
-                              child:
-                                  BlocBuilder<AboutFilmCubit, AboutFilmState>(
-                                    builder: (context, state) {
-                                      return switch (state) {
-                                        AboutFilmEmptyState() => const Text(
-                                          "not found",
-                                        ),
-                                        AboutFilmWithFilmState() => Text(
-                                          state.film.countries.isNotEmpty
-                                              ? state.film.countries
-                                                    .map((e) {
-                                                      return e
-                                                              .country
-                                                              .isNotEmpty
-                                                          ? e.country
-                                                          : '';
-                                                    })
-                                                    .take(2)
-                                                    .reduce(
-                                                      (e1, e2) => "$e1, $e2",
-                                                    )
-                                              : "страна не указана",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      };
-                                    },
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

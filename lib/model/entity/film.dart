@@ -33,6 +33,7 @@ class Film {
     this.genres = const [],
     this.posterUrl = "",
     this.year = "-1",
+    this.description = ""
   });
 
   int filmId = -1;

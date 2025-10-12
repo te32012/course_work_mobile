@@ -1,6 +1,7 @@
 
 
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:course_work/model/entity/film.dart';
 import 'package:course_work/viewModel/service/db_service.dart';
@@ -13,31 +14,28 @@ class FilmsRepo {
 
   FilmsRepo(this._dbService, this._httpService);
 
-  Future<List<Film>> loadTopFilms() async {
-    return _httpService.fetchPageTopFilm();
+  Future<String> fetchPage(Map<String, String> headers, String path) async {
+    return _httpService.fetchPage(headers, path);
   }
+
+  Future<Uint8List> fetchImage(String path) async {
+    return _httpService.fetchImage(path);
+  }
+
 
   Future<List<Film>> loadStorageFilms() {
     return _dbService.getAll();
   }
 
-  void addFilmToFav(Film film) {
-    _dbService.insertFilm(film);
+  Future<int> addFilmToFav(Film film) {
+    return _dbService.insertFilm(film);
   }
 
-  void removeFilmFromFav(int id) {
-    _dbService.deleteFilm(id);
-  }
-
-  Future<List<Film>> searchFilm(String keyword) {
-    return _httpService.fetchPageByKeyword(keyword);
+  Future<int>  removeFilmFromFav(int id) {
+    return _dbService.deleteFilm(id);
   }
   
-  void getAdditionalInformationAboutFilm(Film film) {
-    return _httpService.fetchAdditionalAboutFilm(film);
-  }
-
-  bool hasElementInStorage(int id) {
+  Future<bool> hasElementInStorage(int id) {
     return _dbService.hasElement(id);
   }
 }

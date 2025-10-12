@@ -16,6 +16,7 @@ import 'package:course_work/viewModel/service/film_service.dart';
 import 'package:course_work/viewModel/service/http_service.dart';
 import 'package:course_work/viewModel/usecase/about_films_uc.dart';
 import 'package:course_work/viewModel/usecase/add_films_to_fav_uc.dart';
+import 'package:course_work/viewModel/usecase/get_image_uc.dart';
 import 'package:course_work/viewModel/usecase/has_element_in_storage_uc.dart';
 import 'package:course_work/viewModel/usecase/load_favorite_films_uc.dart';
 import 'package:course_work/viewModel/usecase/load_top_films_uc.dart';
@@ -57,19 +58,21 @@ class MyApp extends StatelessWidget {
     LoadTopFilmsUc _loadTopFilmsUc = LoadTopFilmsUc(_filmService);
     RemoveFilmsFromFavUc _removeFilmsFromFavUc = RemoveFilmsFromFavUc(_filmService);
     SearchFilmsUc _searchFilmsUc = SearchFilmsUc(_filmService);
-    
-    PopularCubit popularCubit = PopularCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _loadTopFilmsUc);
+    GetImageUc _getImageUc = GetImageUc(_filmService);
+
+
+    PopularCubit popularCubit = PopularCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _loadTopFilmsUc, _getImageUc);
     popularCubit.init(); // Где 
-    FavoriteCubit favoriteCubit = FavoriteCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _loadFavoriteFilmsUc);
+    FavoriteCubit favoriteCubit = FavoriteCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _loadFavoriteFilmsUc, _getImageUc);
     favoriteCubit.init();
     return MultiBlocProvider(
       providers: [
         BlocProvider<SearchCubit>(
-          create: (BuildContext build) => SearchCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _searchFilmsUc)
+          create: (BuildContext build) => SearchCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _searchFilmsUc, _getImageUc)
         ),
         BlocProvider<AboutFilmCubit>(
           create: (BuildContext build) =>
-              AboutFilmCubit(_aboutFilmsUc),
+              AboutFilmCubit(_aboutFilmsUc, _getImageUc),
         ),
         BlocProvider<PopularCubit>(create: (BuildContext build) => popularCubit),
         BlocProvider<FavoriteCubit>(create: (context) => favoriteCubit),
