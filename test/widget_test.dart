@@ -5,26 +5,39 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:course_work/model/entity/film.dart';
+import 'package:course_work/view/widget/cart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:course_work/view/application.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:course_work/main.dart';
+import 'package:course_work/view/widget/cart.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    // Создаем тестовый фильм
+    final testFilm = Film(
+      filmId: 1,
+      nameRu: 'Тестовый фильм',
+      year: '2023',
+      genres: [],
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Оборачиваем в MaterialApp для Directionality
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: PosterCart(testFilm, () {}),
+        ),
+      ),
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Или если нужно проверить golden test:
+    await expectLater(
+      find.byType(PosterCart),
+      matchesGoldenFile('goldens/confirm_button.png'),
+    );
   });
 }

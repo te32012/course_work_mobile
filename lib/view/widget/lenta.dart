@@ -1,4 +1,5 @@
 import 'package:course_work/main.dart';
+import 'package:course_work/view/styles/textStyles.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/about_film_cubit.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/favorite_cubit.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/popular_cubit.dart';
@@ -75,7 +76,7 @@ class Lenta extends StatelessWidget {
                   children: [
                     FilledButton.tonal(
                       onPressed: () {},
-                      child: Text("Популярные", style: TextStyle(fontSize: 14)),
+                      child: Text("Популярные", style: TextStyle(fontSize: StyleButtonTextInLenta.fontSize)),
                     ),
                     FilledButton(
                       onPressed: () {
@@ -84,7 +85,7 @@ class Lenta extends StatelessWidget {
                           Routes.favorite,
                         );
                       },
-                      child: Text("Избранные", style: TextStyle(fontSize: 14)),
+                      child: Text("Избранные", style: TextStyle(fontSize: StyleButtonTextInLenta.fontSize)),
                     ),
                   ],
                 ),
@@ -153,11 +154,11 @@ class Lenta extends StatelessWidget {
                       onPressed: () {
                         Navigator.pushReplacementNamed(context, Routes.popular);
                       },
-                      child: Text("Популярные", style: TextStyle(fontSize: 14)),
+                      child: Text("Популярные", style: TextStyle(fontSize: StyleButtonTextInLenta.fontSize)),
                     ),
                     FilledButton(
                       onPressed: () {},
-                      child: Text("Избранные", style: TextStyle(fontSize: 14)),
+                      child: Text("Избранные", style: TextStyle(fontSize: StyleButtonTextInLenta.fontSize)),
                     ),
                   ],
                 ),
