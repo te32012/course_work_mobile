@@ -1,4 +1,5 @@
 import 'package:course_work/main.dart';
+import 'package:course_work/model/entity/film.dart';
 import 'package:course_work/view/styles/textStyles.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/about_film_cubit.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/favorite_cubit.dart';
@@ -19,6 +20,18 @@ class Lenta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    func(Film f) async {
+      var ok = await context.read<PopularCubit>().hasElementInStorage(f.filmId);
+      if (ok) {
+        context.read<PopularCubit>().removeFilmFromFav(f.filmId);
+      } else {
+        context.read<PopularCubit>().addFilmsToFavUc(f);
+      }
+      context.read<PopularCubit>().updateFilmsStatus();
+      context.read<FavoriteCubit>().updateFilmsStatus();
+      context.read<SearchCubit>().updateFilmsStatus();
+    }
+
     switch (type_lenta) {
       case 1:
         {
@@ -47,25 +60,17 @@ class Lenta extends StatelessWidget {
                           .length,
                       itemBuilder: (BuildContext context, int index) {
                         var f = context.read<PopularCubit>().state.items[index];
-                        func() async {
-                          var ok = await context
-                              .read<PopularCubit>()
-                              .hasElementInStorage(f.filmId);
-                          if (ok) {
-                            context.read<PopularCubit>().removeFilmFromFav(f.filmId);
-                          } else {
-                            context.read<PopularCubit>().addFilmsToFavUc(f);
-                          }
-                          context.read<PopularCubit>().updateFilmsStatus();
-                          context.read<FavoriteCubit>().updateFilmsStatus();
-                          context.read<SearchCubit>().updateFilmsStatus();
-                        }
+
                         return GestureDetector(
                           onTap: () {
                             context.read<AboutFilmCubit>().setFilmState(f);
                             Navigator.pushNamed(context, Routes.aboutFilm);
                           },
-                          child: PosterCart(f, func),
+                          child: LongPressDraggable<Film>(
+                            data: f,
+                            feedback: _buildDradFeedback(f),
+                            child: PosterCart(f, func),
+                          ),
                         );
                       },
                     ),
@@ -76,7 +81,12 @@ class Lenta extends StatelessWidget {
                   children: [
                     FilledButton.tonal(
                       onPressed: () {},
-                      child: Text("Популярные", style: TextStyle(fontSize: StyleButtonTextInLenta.fontSize)),
+                      child: Text(
+                        "Популярные",
+                        style: TextStyle(
+                          fontSize: StyleButtonTextInLenta.fontSize,
+                        ),
+                      ),
                     ),
                     FilledButton(
                       onPressed: () {
@@ -85,7 +95,19 @@ class Lenta extends StatelessWidget {
                           Routes.favorite,
                         );
                       },
-                      child: Text("Избранные", style: TextStyle(fontSize: StyleButtonTextInLenta.fontSize)),
+                      child: DragTarget<Film>(
+                        builder: (context, candidateData, rejectedData) {
+                          return Text(
+                            "Избранные",
+                            style: TextStyle(
+                              fontSize: StyleButtonTextInLenta.fontSize,
+                            ),
+                          );
+                        },
+                        onAcceptWithDetails: (dragTargetDetails) {
+                          func(dragTargetDetails.data);
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -123,19 +145,6 @@ class Lenta extends StatelessWidget {
                             .read<FavoriteCubit>()
                             .state
                             .items[index];
-                        func() async {
-                          var ok = await context
-                              .read<FavoriteCubit>()
-                              .hasElementInStorage(f.filmId);
-                          if (ok) {
-                            context.read<FavoriteCubit>().removeFilmFromFav(f.filmId);
-                          } else {
-                            context.read<FavoriteCubit>().addFilmsToFavUc(f);
-                          }
-                          context.read<PopularCubit>().updateFilmsStatus();
-                          context.read<FavoriteCubit>().updateFilmsStatus();
-                          context.read<SearchCubit>().updateFilmsStatus();
-                        }
                         return GestureDetector(
                           onTap: () {
                             context.read<AboutFilmCubit>().setFilmState(f);
@@ -154,11 +163,21 @@ class Lenta extends StatelessWidget {
                       onPressed: () {
                         Navigator.pushReplacementNamed(context, Routes.popular);
                       },
-                      child: Text("Популярные", style: TextStyle(fontSize: StyleButtonTextInLenta.fontSize)),
+                      child: Text(
+                        "Популярные",
+                        style: TextStyle(
+                          fontSize: StyleButtonTextInLenta.fontSize,
+                        ),
+                      ),
                     ),
                     FilledButton(
                       onPressed: () {},
-                      child: Text("Избранные", style: TextStyle(fontSize: StyleButtonTextInLenta.fontSize)),
+                      child: Text(
+                        "Избранные",
+                        style: TextStyle(
+                          fontSize: StyleButtonTextInLenta.fontSize,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -168,5 +187,16 @@ class Lenta extends StatelessWidget {
         }
     }
     return Text("пусто");
+  }
+
+  Widget _buildDradFeedback(Film film) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      height: 160,
+      width: 80,
+      child: film.posterData.isNotEmpty
+          ? Image.memory(film.posterData, fit: BoxFit.cover)
+          : Image.asset("assets/images/not_found.png", fit: BoxFit.cover),
+    );
   }
 }

@@ -1,3 +1,4 @@
+
 import 'package:course_work/model/entity/film.dart';
 import 'package:course_work/view/styles/grapicStyles.dart';
 import 'package:course_work/view/styles/textStyles.dart';
@@ -6,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PosterCart extends StatelessWidget {
   final Film film;
-  final Function onTap;
+  final Function(Film) onTap;
 
   const PosterCart(this.film, this.onTap, {super.key});
 
@@ -55,7 +56,7 @@ class PosterCart extends StatelessWidget {
             width: 24, // Фиксируем ширину для иконки
             child: GestureDetector(
               onTap: () {
-                onTap.call();
+                onTap.call(film);
               },
               child: (film.isFaivorite)
                   ? Icon(Icons.favorite, color: Grapicstyles.favorite)

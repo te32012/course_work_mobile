@@ -29,7 +29,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: PosterCart(testFilm, () {}),
+          body: PosterCart(testFilm, (testFilm) {}),
         ),
       ),
     );

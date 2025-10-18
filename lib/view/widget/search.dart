@@ -1,4 +1,5 @@
 import 'package:course_work/main.dart';
+import 'package:course_work/model/entity/film.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/favorite_cubit.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/popular_cubit.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/search_cubit.dart';
@@ -37,19 +38,19 @@ class Search extends StatelessWidget {
               child: ListView.builder(
                 itemCount: context.read<SearchCubit>().state.items.length,
                 itemBuilder: (BuildContext context, int index) {
-                  func() async {
+                  func(Film f) async {
                     var ok = await context
                         .read<SearchCubit>()
                         .hasElementInStorage(
-                          context.read<SearchCubit>().state.items[index].filmId,
+                          f.filmId,
                         );
                     if (ok) {
                       context.read<SearchCubit>().removeFilmFromFav(
-                        context.read<SearchCubit>().state.items[index].filmId,
+                        f.filmId,
                       );
                     } else {
                       context.read<SearchCubit>().addFilmsToFavUc(
-                        context.read<SearchCubit>().state.items[index],
+                        f,
                       );
                     }
                     context.read<PopularCubit>().updateFilmsStatus();
