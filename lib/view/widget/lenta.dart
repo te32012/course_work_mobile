@@ -63,8 +63,12 @@ class Lenta extends StatelessWidget {
 
                         return GestureDetector(
                           onTap: () {
-                            context.read<AboutFilmCubit>().setFilmState(f);
-                            Navigator.pushNamed(context, Routes.aboutFilm);
+                            // context.read<AboutFilmCubit>().setFilmState(f);
+                            Navigator.pushNamed(
+                              context,
+                              Routes.aboutFilm,
+                              arguments: f,
+                            );
                           },
                           child: LongPressDraggable<Film>(
                             data: f,
@@ -147,8 +151,12 @@ class Lenta extends StatelessWidget {
                             .items[index];
                         return GestureDetector(
                           onTap: () {
-                            context.read<AboutFilmCubit>().setFilmState(f);
-                            Navigator.pushNamed(context, Routes.aboutFilm);
+                            // context.read<AboutFilmCubit>().setFilmState(f);
+                            Navigator.pushNamed(
+                              context,
+                              Routes.aboutFilm,
+                              arguments: f,
+                            );
                           },
                           child: PosterCart(f, func),
                         );

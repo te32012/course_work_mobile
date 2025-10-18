@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:course_work/model/entity/film.dart';
 import 'package:course_work/model/repository/db_repo.dart';
 import 'package:course_work/model/repository/films_repo.dart';
 import 'package:course_work/view/screens/favourite_screen.dart';
@@ -27,6 +28,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class Routes {
   static final String popular = '/popular';
@@ -42,7 +44,6 @@ class MyApp extends StatelessWidget {
   const MyApp(this._httpRepo, this._dbRepo, {super.key});
   @override
   Widget build(BuildContext context) {
-
     DbService _dbService = DbService(_dbRepo);
     HttpService _httpService = HttpService(_httpRepo);
 
@@ -50,31 +51,52 @@ class MyApp extends StatelessWidget {
 
     FilmService _filmService = FilmService(_filmsRepo);
 
-
     AboutFilmsUc _aboutFilmsUc = AboutFilmsUc(_filmService);
     AddFilmsToFavUc _addFilmsToFavUc = AddFilmsToFavUc(_filmService);
-    HasElementInStorageUc _hasElementInStorageUc = HasElementInStorageUc(_filmService);
-    LoadFavoriteFilmsUc _loadFavoriteFilmsUc = LoadFavoriteFilmsUc(_filmService);
+    HasElementInStorageUc _hasElementInStorageUc = HasElementInStorageUc(
+      _filmService,
+    );
+    LoadFavoriteFilmsUc _loadFavoriteFilmsUc = LoadFavoriteFilmsUc(
+      _filmService,
+    );
     LoadTopFilmsUc _loadTopFilmsUc = LoadTopFilmsUc(_filmService);
-    RemoveFilmsFromFavUc _removeFilmsFromFavUc = RemoveFilmsFromFavUc(_filmService);
+    RemoveFilmsFromFavUc _removeFilmsFromFavUc = RemoveFilmsFromFavUc(
+      _filmService,
+    );
     SearchFilmsUc _searchFilmsUc = SearchFilmsUc(_filmService);
     GetImageUc _getImageUc = GetImageUc(_filmService);
 
-
-    PopularCubit popularCubit = PopularCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _loadTopFilmsUc, _getImageUc);
-    popularCubit.init(); // Где 
-    FavoriteCubit favoriteCubit = FavoriteCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _loadFavoriteFilmsUc, _getImageUc);
+    PopularCubit popularCubit = PopularCubit(
+      _addFilmsToFavUc,
+      _removeFilmsFromFavUc,
+      _hasElementInStorageUc,
+      _loadTopFilmsUc,
+      _getImageUc,
+    );
+    popularCubit.init(); // Где
+    FavoriteCubit favoriteCubit = FavoriteCubit(
+      _addFilmsToFavUc,
+      _removeFilmsFromFavUc,
+      _hasElementInStorageUc,
+      _loadFavoriteFilmsUc,
+      _getImageUc,
+    );
     favoriteCubit.init();
     return MultiBlocProvider(
       providers: [
         BlocProvider<SearchCubit>(
-          create: (BuildContext build) => SearchCubit(_addFilmsToFavUc, _removeFilmsFromFavUc, _hasElementInStorageUc, _searchFilmsUc, _getImageUc)
+          create: (BuildContext build) => SearchCubit(
+            _addFilmsToFavUc,
+            _removeFilmsFromFavUc,
+            _hasElementInStorageUc,
+            _searchFilmsUc,
+            _getImageUc,
+          ),
         ),
-        BlocProvider<AboutFilmCubit>(
-          create: (BuildContext build) =>
-              AboutFilmCubit(_aboutFilmsUc, _getImageUc),
+
+        BlocProvider<PopularCubit>(
+          create: (BuildContext build) => popularCubit,
         ),
-        BlocProvider<PopularCubit>(create: (BuildContext build) => popularCubit),
         BlocProvider<FavoriteCubit>(create: (context) => favoriteCubit),
       ],
       child: MaterialApp(
@@ -97,10 +119,18 @@ class MyApp extends StatelessWidget {
           // This works for code too, not just values: Most code changes can be
           // tested with just a hot reload.
         ),
-        routes: {Routes.aboutFilm: (context) => AboutScreen(),
-                Routes.favorite: (context) => FavouriteScreen(),
-                Routes.popular: (context) => PopularScreen(),
-                Routes.findPage: (context) => SearchScreen()
+        routes: {
+          Routes.aboutFilm: (context) => BlocProvider<AboutFilmCubit>(
+            create: (BuildContext build) => AboutFilmCubit(
+              _aboutFilmsUc,
+              _getImageUc,
+              film: ModalRoute.of(context)!.settings.arguments as Film,
+            ),
+            child: AboutScreen(),
+          ),
+          Routes.favorite: (context) => FavouriteScreen(),
+          Routes.popular: (context) => PopularScreen(),
+          Routes.findPage: (context) => SearchScreen(),
         },
       ),
     );
@@ -114,6 +144,9 @@ Future<Directory> getDir() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  databaseFactory = databaseFactoryFfi;
+
   var dir = await getDir();
   print(dir.path);
   var db = await openDatabase(

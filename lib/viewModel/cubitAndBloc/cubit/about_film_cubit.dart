@@ -5,7 +5,12 @@ import 'package:course_work/viewModel/usecase/get_image_uc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AboutFilmCubit extends Cubit<AboutFilmWithFilmState> {
-  AboutFilmCubit(this._aboutFilmsUc, this._getImageUc) : super(AboutFilmWithFilmState(Film()));
+  AboutFilmCubit(this._aboutFilmsUc, this._getImageUc, {Film? film})
+    : super(AboutFilmWithFilmState(Film())) {
+    if (film != null) {
+      setFilmState(film);
+    }
+  }
 
   final AboutFilmsUc _aboutFilmsUc;
   final GetImageUc _getImageUc;

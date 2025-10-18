@@ -22,12 +22,20 @@ class SearchCubit extends Cubit<SearchState> {
   final SearchFilmsUc _searchFilmsUc;
   final GetImageUc _getImageUc;
 
+  int _loadingId = 0;
+
   Future<void> onTextChanged(String text) async {
+    _loadingId++;
+    int _localLoadingId = _loadingId;
+
     final searchTerm = text;
     if (searchTerm.isEmpty) return emit(SearchState([]));
 
     final result = await _searchFilmsUc.use(searchTerm);
     for (Film f in result) {
+      if (_localLoadingId != _loadingId) {
+        return;
+      }
       f.isFaivorite = await _hasElementInStorageUc.use(f.filmId);
       f.posterData = await _getImageUc.use(f.posterUrl);
       emit(SearchState(result));
@@ -58,6 +66,7 @@ class SearchCubit extends Cubit<SearchState> {
     }).toList();
     emit(SearchState(state.items));
   }
+
   void updateFilmsStatus() async {
     for (Film f in state.items) {
       var ok = await _hasElementInStorageUc.use(f.filmId);

@@ -3,8 +3,6 @@ import 'package:course_work/model/entity/film.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/favorite_cubit.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/popular_cubit.dart';
 import 'package:course_work/viewModel/cubitAndBloc/cubit/search_cubit.dart';
-import 'package:course_work/viewModel/cubitAndBloc/cubit/about_film_cubit.dart';
-import 'package:course_work/viewModel/cubitAndBloc/state/search_state.dart';
 import 'package:course_work/view/widget/cart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +11,18 @@ class Search extends StatelessWidget {
   final TextEditingController text;
 
   const Search(this.text, {super.key});
+
+  func(Film f, BuildContext context) async {
+    var ok = await context.read<SearchCubit>().hasElementInStorage(f.filmId);
+    if (ok) {
+      context.read<SearchCubit>().removeFilmFromFav(f.filmId);
+    } else {
+      context.read<SearchCubit>().addFilmsToFavUc(f);
+    }
+    context.read<PopularCubit>().updateFilmsStatus();
+    context.read<FavoriteCubit>().updateFilmsStatus();
+    context.read<SearchCubit>().updateFilmsStatus();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,36 +48,23 @@ class Search extends StatelessWidget {
               child: ListView.builder(
                 itemCount: context.read<SearchCubit>().state.items.length,
                 itemBuilder: (BuildContext context, int index) {
-                  func(Film f) async {
-                    var ok = await context
-                        .read<SearchCubit>()
-                        .hasElementInStorage(
-                          f.filmId,
-                        );
-                    if (ok) {
-                      context.read<SearchCubit>().removeFilmFromFav(
-                        f.filmId,
-                      );
-                    } else {
-                      context.read<SearchCubit>().addFilmsToFavUc(
-                        f,
-                      );
-                    }
-                    context.read<PopularCubit>().updateFilmsStatus();
-                    context.read<FavoriteCubit>().updateFilmsStatus();
-                    context.read<SearchCubit>().updateFilmsStatus();
-                  }
-
                   return GestureDetector(
                     onTap: () {
-                      context.read<AboutFilmCubit>().setFilmState(
-                        context.read<SearchCubit>().state.items[index],
+                      // context.read<AboutFilmCubit>().setFilmState(
+                      //   context.read<SearchCubit>().state.items[index],
+                      // );
+                      Navigator.pushNamed(
+                        context,
+                        Routes.aboutFilm,
+                        arguments: context
+                            .read<SearchCubit>()
+                            .state
+                            .items[index],
                       );
-                      Navigator.pushNamed(context, Routes.aboutFilm);
                     },
                     child: PosterCart(
                       context.read<SearchCubit>().state.items[index],
-                      func,
+                      (film) => func(film, context),
                     ),
                   );
                 },
